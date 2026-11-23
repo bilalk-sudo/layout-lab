@@ -1,0 +1,952 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Layout Lab</title><meta name="robots" content="noindex"><meta name="theme-color" content="#3346E0"><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a settings sheet of icon tiles on top, a contact sheet of wireframes below, a side drawer for the chosen layout. */
+:root{
+  --bg:#F3F4F1; --surface:#FFFFFF; --well:#ECEEEA; --line:#DEE1DB; --line-strong:#C6CBC3;
+  --ink:#161917; --muted:#62685F; --accent:#3346E0; --accent-soft:#E9EBFD; --accent-ink:#2232B5;
+  --crop:#D9473F; --shadow:0 1px 2px rgba(20,24,20,.05),0 8px 24px rgba(20,24,20,.06);
+  --wf-canvas:#FFFFFF; --wf-line:#D5D9D2; --wf-ink:#262A27; --wf-ink2:#A6ABA3;
+  --wf-vis:#D7DEF6; --wf-vis2:#AFBCEA; --wf-icon:#E6E0F7; --wf-icon2:#B9AAE6;
+  --wf-badge:#F0B93A; --wf-panel:#FFFFFF; --wf-tile:#EEF0EB; --wf-block:#F1CBB6;
+  --wf-inv:#FFFFFF; --wf-inv2:rgba(255,255,255,.72); --wf-on-accent:#FFFFFF;
+  --wf-solid:#EEF0F6; --wf-g1:#E3E7FB; --wf-g2:#FBE8DD; --wf-photo:#C3CAC0; --wf-photo2:#A9B1A6;
+  --wf-dot:#D2D6DE; --wf-shape:#DCE2F6; --wf-scrim:#0E1220;
+  --font-ui:'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1110; --surface:#171A18; --well:#121513; --line:#2A2E2B; --line-strong:#3B403C;
+    --ink:#ECEFEA; --muted:#9AA098; --accent:#8794FF; --accent-soft:#222746; --accent-ink:#BAC2FF;
+    --crop:#F06A61; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+    --wf-canvas:#222624; --wf-line:#3A3F3B; --wf-ink:#E4E7E2; --wf-ink2:#6F756E;
+    --wf-vis:#2C3555; --wf-vis2:#46528A; --wf-icon:#372F52; --wf-icon2:#6A5AA6;
+    --wf-badge:#D7A332; --wf-panel:#2D322F; --wf-tile:#2A2F2C; --wf-block:#5B3B2D;
+    --wf-inv:#FFFFFF; --wf-inv2:rgba(255,255,255,.7); --wf-on-accent:#121433;
+    --wf-solid:#262B33; --wf-g1:#283050; --wf-g2:#4A3228; --wf-photo:#3A403B; --wf-photo2:#4B524C;
+    --wf-dot:#363C45; --wf-shape:#2E3650; --wf-scrim:#05070D;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1110; --surface:#171A18; --well:#121513; --line:#2A2E2B; --line-strong:#3B403C;
+  --ink:#ECEFEA; --muted:#9AA098; --accent:#8794FF; --accent-soft:#222746; --accent-ink:#BAC2FF;
+  --crop:#F06A61; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --wf-canvas:#222624; --wf-line:#3A3F3B; --wf-ink:#E4E7E2; --wf-ink2:#6F756E;
+  --wf-vis:#2C3555; --wf-vis2:#46528A; --wf-icon:#372F52; --wf-icon2:#6A5AA6;
+  --wf-badge:#D7A332; --wf-panel:#2D322F; --wf-tile:#2A2F2C; --wf-block:#5B3B2D;
+  --wf-inv:#FFFFFF; --wf-inv2:rgba(255,255,255,.7); --wf-on-accent:#121433;
+  --wf-solid:#262B33; --wf-g1:#283050; --wf-g2:#4A3228; --wf-photo:#3A403B; --wf-photo2:#4B524C;
+  --wf-dot:#363C45; --wf-shape:#2E3650; --wf-scrim:#05070D;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+.app{max-width:1360px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 104px;display:flex;flex-direction:column;gap:20px}
+
+.topbar{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+.top-actions{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;align-items:center;gap:8px}
+.theme-switch{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font-size:12px;font-weight:500;color:var(--ink)}
+.theme-switch:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.theme-switch .track{position:relative;width:40px;height:22px;border-radius:999px;background:var(--well);border:1px solid var(--line-strong);transition:background .15s}
+.theme-switch .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:var(--bg);transition:transform .18s}
+.theme-switch .knob svg{width:11px;height:11px}
+.theme-switch[aria-checked="true"] .knob{transform:translateX(18px)}
+.theme-switch[aria-checked="true"] .track{background:var(--accent-soft);border-color:var(--accent)}
+.brand-mark{width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.brand h1{font-size:18px;font-weight:600;letter-spacing:-.01em;margin:0}
+.brand p{margin:0;color:var(--muted);font-size:12.5px}
+.summary{font-family:var(--font-mono);font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-variant-numeric:tabular-nums}
+
+.controls{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;padding:16px 18px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row-label{display:flex;flex-direction:column;gap:2px;padding-top:6px}
+.row-label span{font-weight:600;font-size:13px}
+.row-label small{color:var(--muted);font-size:12px;line-height:1.35}
+.chips{display:flex;flex-wrap:wrap;gap:8px;min-width:0;align-items:stretch}
+.chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:86px;padding:10px 10px 9px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;transition:border-color .12s,background .12s,color .12s;color:var(--ink)}
+.chip:hover{border-color:var(--line-strong);background:var(--well)}
+.chip:focus-visible,.icon-btn:focus-visible,.card:focus-visible,.btn:focus-visible,.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chip svg{width:22px;height:22px;flex:none}
+.chip .chip-label{font-size:12px;font-weight:500;white-space:nowrap}
+.chip .chip-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);white-space:nowrap;margin-top:-4px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.chip[aria-pressed="true"] .chip-sub{color:var(--accent-ink);opacity:.8}
+.chip.wide{min-width:110px}
+.divider{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+.custom-size{display:flex;align-items:center;gap:6px;padding:0 4px;font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.custom-size input{width:78px;padding:8px 8px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);font-family:var(--font-mono);font-size:12.5px}
+.hint{font-size:12px;color:var(--muted);align-self:center;padding-left:4px}
+
+.results{display:flex;flex-direction:column;gap:14px}
+.results-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.results-head h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.results-head p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:border-color .12s,transform .12s;text-align:left;padding:0}
+.card:hover{border-color:var(--line-strong)}
+.card.is-selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card-preview{height:210px;background:var(--well);display:flex;align-items:center;justify-content:center;padding:16px}
+.card-preview svg{max-width:100%;max-height:100%;width:auto;height:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.08))}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 10px 10px 12px;border-top:1px solid var(--line)}
+.card-name{font-weight:550;font-size:13px;line-height:1.3;min-width:0}
+.card-tag{display:block;font-size:11.5px;color:var(--muted);font-weight:400;margin-top:1px}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:12px;font-weight:500;flex:none}
+.icon-btn:hover{background:var(--well);border-color:var(--line-strong)}
+.icon-btn svg{width:15px;height:15px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;background:transparent;cursor:pointer;font-size:13.5px;font-weight:550;color:var(--muted)}
+.tab svg{width:15px;height:15px}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:6px}
+.tab-count{font-family:var(--font-mono);font-size:11px;background:var(--well);border:1px solid var(--line);border-radius:999px;padding:0 7px;line-height:18px;font-variant-numeric:tabular-nums}
+.card-actions{display:flex;gap:6px;flex:none}
+.star-btn{padding:0 8px}
+.star-btn[aria-pressed="true"]{color:var(--wf-badge);border-color:var(--wf-badge)}
+.star-btn[aria-pressed="true"] svg{fill:currentColor}
+.d-foot .star-btn{height:40px;padding:0 12px}
+.empty{padding:48px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line-strong);border-radius:12px}
+
+.backdrop{position:fixed;inset:0;background:rgba(10,12,10,.35);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(580px,100%);background:var(--surface);border-left:1px solid var(--line);z-index:30;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s ease;box-shadow:-12px 0 40px rgba(0,0,0,.12);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.drawer.open{transform:none}
+.d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.eyebrow{margin:0;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+.d-head h3{margin:2px 0 0;font-size:18px;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.d-body{flex:1;overflow-y:auto;padding:16px 20px 20px;display:flex;flex-direction:column;gap:16px}
+.d-preview{background:var(--well);border-radius:10px;padding:18px;display:flex;justify-content:center;align-items:center;height:340px}
+.d-preview svg{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
+.d-desc{margin:0;color:var(--muted);line-height:1.55}
+.d-fields{border:0;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.d-fields legend{font-weight:600;font-size:13px;margin-bottom:8px;padding:0}
+.d-fields label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.d-fields label.full{grid-column:1/-1}
+.d-fields input{padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);font-size:13px;min-width:0}
+.d-fields input:focus,.prompt-box:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.prompt-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.prompt-head span{font-weight:600;font-size:13px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--well)}
+.seg button{border:0;background:transparent;padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.prompt-box{width:100%;min-height:300px;resize:vertical;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--well);font-family:var(--font-mono);font-size:12px;line-height:1.55;color:var(--ink)}
+.d-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:flex-start;flex-wrap:wrap}
+/* keep actions clear of the hosting badge pinned bottom-right */
+@media (max-width:640px){.d-foot{padding-bottom:76px}.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+.d-foot small{color:var(--muted);font-size:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:13.5px}
+:root[data-theme="dark"] .btn{color:var(--wf-on-accent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn{color:var(--wf-on-accent)}}
+.btn svg{width:16px;height:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;z-index:50;transition:opacity .18s,transform .18s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:720px){
+  .row{grid-template-columns:1fr;gap:10px;padding:14px}
+  .row-label{padding-top:0;flex-direction:row;align-items:baseline;gap:8px}
+  .chip{min-width:76px;padding:9px 8px 8px}
+  .d-fields{grid-template-columns:1fr}
+  .d-preview{height:260px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .card-preview{height:170px;padding:12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="icgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="currentColor"/><stop offset="1" stop-color="currentColor" stop-opacity=".12"/></linearGradient></defs>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="top-actions">
+      <div class="summary" id="summary"></div>
+      <button type="button" class="theme-switch" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark mode">
+        <span id="theme-label">Light mode</span>
+        <span class="track" aria-hidden="true"><span class="knob" id="theme-knob"></span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="controls" aria-label="Layout settings">
+    <div class="row"><div class="row-label"><span>Size</span><small>Canvas dimensions</small></div><div class="chips" id="chips-size"></div></div>
+    <div class="row"><div class="row-label"><span>Elements</span><small>What goes inside the creative</small></div><div class="chips" id="chips-els"></div></div>
+    <div class="row"><div class="row-label"><span>Background</span><small>What sits behind everything</small></div><div class="chips" id="chips-bg"></div></div>
+    <div class="row"><div class="row-label"><span>Style</span><small>The kind of layout you want</small></div><div class="chips" id="chips-style"></div></div>
+    <div class="row"><div class="row-label"><span>Bleed / crop</span><small>Edges that will be cut off</small></div><div class="chips" id="chips-bleed"></div></div>
+  </section>
+
+  <section class="results" aria-live="polite">
+    <div class="tabs" role="tablist" aria-label="Layout views">
+      <button type="button" role="tab" class="tab" id="tab-all" aria-selected="true">All layouts</button>
+      <button type="button" role="tab" class="tab" id="tab-fav" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg>Favourites <span class="tab-count" id="fav-count">0</span></button>
+    </div>
+    <div class="results-head">
+      <div><h2 id="res-count"></h2><p id="res-sub"></p></div>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--wf-ink)"></i>Text</span>
+        <span><i style="background:var(--wf-vis2)"></i>Visual</span>
+        <span><i style="background:var(--accent)"></i>CTA</span>
+        <span><i style="background:var(--wf-badge)"></i>Badge</span>
+        <span><i style="background:repeating-linear-gradient(45deg,var(--crop) 0 2px,transparent 2px 4px)"></i>Crop zone</span>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</div>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="d-title" aria-hidden="true">
+  <div class="d-head">
+    <div><p class="eyebrow" id="d-style"></p><h3 id="d-title">Layout</h3></div>
+    <button class="icon-btn" id="d-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="d-body">
+    <div class="d-preview" id="d-preview"></div>
+    <p class="d-desc" id="d-desc"></p>
+    <fieldset class="d-fields">
+      <legend>Fill in the details (optional, added to the prompt)</legend>
+      <label id="w-headline">Headline<input id="f-headline" type="text" placeholder="Your headline"></label>
+      <label id="w-subheadline">Subheadline<input id="f-subheadline" type="text" placeholder="Supporting line"></label>
+      <label id="w-cta">CTA text<input id="f-cta" type="text" placeholder="Learn more"></label>
+      <label id="w-badge">Badge text<input id="f-badge" type="text" placeholder="Free webinar"></label>
+      <label id="w-subject" class="full">What the visual shows<input id="f-subject" type="text" placeholder="e.g. a trader at a desk with charts on two monitors"></label>
+      <label id="w-colours" class="full">Colours and brand notes<input id="f-colours" type="text" placeholder="e.g. navy and white with an orange CTA, clean sans-serif type"></label>
+    </fieldset>
+    <div class="prompt-head">
+      <span>Layout prompt</span>
+      <div class="seg" role="group" aria-label="Prompt format">
+        <button type="button" id="fmt-prose" aria-pressed="true">Written brief</button>
+        <button type="button" id="fmt-json" aria-pressed="false">JSON</button>
+      </div>
+    </div>
+    <textarea class="prompt-box" id="d-prompt" readonly spellcheck="false"></textarea>
+  </div>
+  <div class="d-foot">
+    <button class="btn" id="d-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Copy prompt</button>
+    <button type="button" class="icon-btn star-btn" id="d-star" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg><span>Add to favourites</span></button>
+  </div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- data ---------- */
+const FORMATS=[
+  {id:'square',name:'Square',w:1080,h:1080,use:'Feed post'},
+  {id:'portrait',name:'Portrait',w:1080,h:1350,use:'4:5 feed post'},
+  {id:'story',name:'Story',w:1080,h:1920,use:'9:16 Stories and Reels'},
+  {id:'landscape',name:'Landscape',w:1200,h:628,use:'1.91:1 link ad'},
+  {id:'wide',name:'Widescreen',w:1920,h:1080,use:'16:9 video cover or display'},
+  {id:'mrec',name:'Med. rectangle',w:300,h:250,use:'Display MREC'},
+  {id:'halfpage',name:'Half page',w:300,h:600,use:'Display half page'},
+  {id:'sky',name:'Skyscraper',w:160,h:600,use:'Display skyscraper'},
+  {id:'leader',name:'Leaderboard',w:728,h:90,use:'Display leaderboard'},
+  {id:'billboard',name:'Billboard',w:970,h:250,use:'Display billboard'},
+  {id:'email',name:'Email header',w:600,h:200,use:'Email banner'},
+  {id:'custom',name:'Custom',w:1080,h:1080,use:'Custom size'}
+];
+const ELEMENTS=[
+  ['logo','Logo'],['headline','Headline'],['subheadline','Subheadline'],['body','Body copy'],['bullets','Bullet points'],
+  ['cta','CTA button'],['image','Hero image'],['person','Person'],['icon','Illustration'],['badge','Badge / tag'],
+  ['date','Date & time'],['stat','Key number'],['testimonial','Quote'],['url','Website URL'],['qr','QR code'],['disclaimer','Disclaimer']
+];
+const NAMES=Object.fromEntries(ELEMENTS);
+const BACKGROUNDS=[['solid','Solid colour'],['gradient','Gradient'],['photo','Photo'],['pattern','Pattern'],['shapes','Shapes']];
+const STYLES=[['all','All styles'],['simple','Simple'],['straight','Straightforward'],['marketing','Marketing'],['creative','Creative']];
+const STYLE_NAME=Object.fromEntries(STYLES);
+const STYLE_BRIEF={
+  simple:'Minimal and clean. Generous white space, one clear focal point, at most two colours plus neutrals, no decorative effects.',
+  straight:'Clear and direct. Obvious reading order, solid colours, high legibility, nothing that competes with the message.',
+  marketing:'Promotional and attention-grabbing. Bold contrast, a prominent CTA, strong hierarchy and a polished ad finish.',
+  creative:'Editorial and expressive. Asymmetric composition, oversized type, overlapping layers and bold crops, while staying uncluttered.'
+};
+const BG_BRIEF={
+  solid:'A single flat colour.',
+  gradient:'A smooth two-colour gradient.',
+  photo:'A full-bleed photograph, softened or darkened so text stays readable.',
+  pattern:'A subtle repeating pattern or texture at low contrast.',
+  shapes:'A flat colour with a few large abstract geometric shapes.'
+};
+
+const ICONS={
+  logo:'<path d="M12 3l7.5 4.3v8.6L12 20.2 4.5 15.9V7.3z"/><path d="M9 12h6"/>',
+  headline:'<path d="M6 5v14M18 5v14M6 12h12"/>',
+  subheadline:'<path d="M4 9h16M4 15h11"/>',
+  body:'<path d="M4 6h16M4 10h16M4 14h16M4 18h10"/>',
+  bullets:'<path d="M10 7h10M10 12h10M10 17h10"/><circle cx="5" cy="7" r="1.2" fill="currentColor"/><circle cx="5" cy="12" r="1.2" fill="currentColor"/><circle cx="5" cy="17" r="1.2" fill="currentColor"/>',
+  cta:'<rect x="3" y="7" width="18" height="10" rx="5"/><path d="M8.5 12h7"/>',
+  image:'<rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M3.5 16l5-5 4 4 2.5-2.5 5.5 5"/><circle cx="15.5" cy="9.5" r="1.4"/>',
+  person:'<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.6-6.2 7-6.2s6.2 2.4 7 6.2"/>',
+  icon:'<path d="M12 3l2.2 5.6L20 9.5l-4.4 3.8L17 19l-5-3-5 3 1.4-5.7L4 9.5l5.8-.9z"/>',
+  badge:'<path d="M3.5 12.2V4.5h7.7l9.3 9.3-7.7 7.7z"/><circle cx="7.8" cy="8.8" r="1.2"/>',
+  date:'<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+  stat:'<path d="M5 20v-7M12 20V5M19 20v-10"/>',
+  testimonial:'<path d="M6 8h4v4c0 2.8-1.6 4.6-4 5.5M14 8h4v4c0 2.8-1.6 4.6-4 5.5"/>',
+  url:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.4 5.3 3.4 8.5s-1 6.1-3.4 8.5c-2.4-2.4-3.4-5.3-3.4-8.5s1-6.1 3.4-8.5z"/>',
+  qr:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 19.5h1M19.5 14v1"/>',
+  disclaimer:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/>',
+  solid:'<rect x="4" y="4" width="16" height="16" rx="3" fill="currentColor" stroke="none"/>',
+  gradient:'<rect x="4" y="4" width="16" height="16" rx="3" fill="url(#icgrad)"/>',
+  photo:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 16l4.5-4.5 4 4 2-2L20 18" /><circle cx="15" cy="9" r="1.5" fill="currentColor"/>',
+  pattern:'<rect x="4" y="4" width="16" height="16" rx="3"/><g fill="currentColor" stroke="none"><circle cx="8.5" cy="8.5" r="1"/><circle cx="12" cy="8.5" r="1"/><circle cx="15.5" cy="8.5" r="1"/><circle cx="8.5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="15.5" cy="12" r="1"/><circle cx="8.5" cy="15.5" r="1"/><circle cx="12" cy="15.5" r="1"/><circle cx="15.5" cy="15.5" r="1"/></g>',
+  shapes:'<circle cx="9" cy="9.5" r="4.5"/><path d="M14 20l3.5-7 3.5 7z"/><rect x="3.5" y="15.5" width="6" height="4.5" rx="1"/>',
+  all:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  simple:'<circle cx="12" cy="12" r="5.5"/>',
+  straight:'<path d="M5 6.5h14M5 12h14M5 17.5h9"/>',
+  marketing:'<path d="M4 10v4h3l7.5 4.5v-13L7 10z"/><path d="M17.5 9.2a4 4 0 0 1 0 5.6"/>',
+  creative:'<path d="M3.5 16.5c2.5-6 5-1 7.5-5s4.5-5 9.5-4.5"/><circle cx="7" cy="7" r="2.2"/><path d="M14 19.5h6"/>',
+  none:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><path d="M6 18L18 6"/>',
+  side_t:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><rect x="4.5" y="4.5" width="15" height="4.5" fill="currentColor" stroke="none"/>',
+  side_b:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><rect x="4.5" y="15" width="15" height="4.5" fill="currentColor" stroke="none"/>',
+  side_l:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><rect x="4.5" y="4.5" width="4.5" height="15" fill="currentColor" stroke="none"/>',
+  side_r:'<rect x="4.5" y="4.5" width="15" height="15" rx="2"/><rect x="15" y="4.5" width="4.5" height="15" fill="currentColor" stroke="none"/>',
+  amt:'<path d="M4 12h16M4 9v6M20 9v6"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>'
+};
+const icon=(k)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`;
+function ratioIcon(w,h){
+  const s=17; let rw,rh; if(w>=h){rw=s;rh=Math.max(3,s*h/w);}else{rh=s;rw=Math.max(3,s*w/h);}
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="${(24-rw)/2}" y="${(24-rh)/2}" width="${rw}" height="${rh}" rx="1.5"/></svg>`;
+}
+
+/* ---------- state ---------- */
+const DEFAULT={tab:'all',fmt:'portrait',cw:1080,ch:1080,els:['logo','headline','subheadline','cta','image'],bg:'gradient',style:'all',sides:[],amt:10,out:'prose',text:{}};
+let state=JSON.parse(JSON.stringify(DEFAULT));
+try{const s=JSON.parse(localStorage.getItem('layoutlab.v1')||'null'); if(s&&typeof s==='object') state=Object.assign(state,s);}catch(e){}
+function save(){try{localStorage.setItem('layoutlab.v1',JSON.stringify(state));}catch(e){}}
+
+/* ---------- geometry helpers ---------- */
+const VIS=['image','person','icon'];
+const MAIN=['badge','headline','subheadline','body','bullets','stat','testimonial','date','cta'];
+const FULLW=new Set(['headline','subheadline','body','bullets','testimonial','disclaimer']);
+const SPEC={logo:[.24,.07],badge:[.26,.055],headline:[1,.17],subheadline:[.9,.075],body:[.95,.1],bullets:[1,.16],stat:[.4,.13],testimonial:[1,.14],date:[.42,.05],cta:[.34,.085],url:[.4,.035],qr:[.13,.13],disclaimer:[1,.03]};
+const GAP=c=>.025*c.m;
+function spec(c,id,rw,o){
+  const s=SPEC[id]; o=o||{};
+  let h=s[1]*c.m; if(id==='headline') h*=(o.hk||1);
+  const full=FULLW.has(id)||(id==='cta'&&o.ctaFull);
+  const w=full? rw*(id==='cta'?1:s[0]) : Math.min(s[0]*c.m,rw);
+  return {w,h};
+}
+function measure(c,ids,w,o){const it=ids.filter(c.has); if(!it.length) return 0; return it.reduce((s,id)=>s+spec(c,id,w,o).h,0)+GAP(c)*(it.length-1);}
+function stack(c,R,ids,o){
+  o=o||{};
+  const it=ids.filter(c.has).map(id=>Object.assign({id},spec(c,id,R.w,o)));
+  if(!it.length||R.h<=0||R.w<=0) return [];
+  let g=GAP(c); let tot=it.reduce((s,i)=>s+i.h,0)+g*(it.length-1);
+  const sc=tot>R.h? R.h/tot : (o.grow? Math.min(o.grow,R.h/tot):1);
+  it.forEach(i=>{i.h*=sc; if(!(FULLW.has(i.id)||(i.id==='cta'&&o.ctaFull))) i.w=Math.min(i.w*sc,R.w);});
+  g*=sc; tot*=sc;
+  const al=o.align||'left';
+  let y=R.y+(o.valign==='center'?(R.h-tot)/2:o.valign==='bottom'?R.h-tot:0);
+  return it.map(i=>{
+    const x=al==='left'?R.x:al==='right'?R.x+R.w-i.w:R.x+(R.w-i.w)/2;
+    const b={id:i.id,x,y,w:i.w,h:i.h}; if(o.inv) b.inv=1; if(i.id==='cta'&&o.ctaLight) b.shape='light';
+    y+=i.h+g; return b;
+  });
+}
+const hasVis=c=>VIS.some(c.has);
+function visuals(c,R,o){
+  o=o||{};
+  const v=VIS.filter(c.has); if(!v.length||R.w<=0||R.h<=0) return [];
+  const out=[Object.assign({id:v[0],z:o.z!=null?o.z:.8},R,o.shape?{shape:o.shape}:{})];
+  if(v.length>1){const s=Math.min(R.w,R.h)*.42; out.push({id:v[1],x:o.flip?R.x+R.w*.04:R.x+R.w-s-R.w*.04,y:R.y+R.h-s-R.h*.04,w:s,h:s,z:.9,shape:v[1]==='person'?'cutout':'rounded',secondary:1});}
+  if(v.length>2){const s=Math.min(R.w,R.h)*.26; out.push({id:v[2],x:o.flip?R.x+R.w-s-R.w*.04:R.x+R.w*.04,y:R.y+R.h*.04,w:s,h:s,z:.9,shape:'rounded',secondary:1});}
+  return out;
+}
+function logoAt(c,R,pos,o){
+  if(!c.has('logo')) return {boxes:[],rest:R};
+  const s=spec(c,'logo',R.w); const strip=s.h+.035*c.m;
+  const x=pos[1]==='l'?R.x:pos[1]==='r'?R.x+R.w-s.w:R.x+(R.w-s.w)/2;
+  const b={id:'logo',x,y:pos[0]==='t'?R.y:R.y+R.h-s.h,w:s.w,h:s.h}; if(o&&o.inv) b.inv=1;
+  return {boxes:[b],rest:pos[0]==='t'?{x:R.x,y:R.y+strip,w:R.w,h:R.h-strip}:{x:R.x,y:R.y,w:R.w,h:R.h-strip}};
+}
+function footer(c,R,align,o){
+  const m=c.m, out=[]; o=o||{};
+  const qh=c.has('qr')?.13*m:0, uh=c.has('url')?.035*m:0, dh=c.has('disclaimer')?.03*m:0, g=.02*m;
+  const rowH=Math.max(qh,uh); const tot=rowH+dh+(rowH&&dh?g:0);
+  if(!tot) return {boxes:[],rest:R};
+  const top=R.y+R.h-tot;
+  if(uh){const w=Math.min(.4*m,R.w*.6); out.push({id:'url',x:align==='center'&&!qh?R.x+(R.w-w)/2:R.x,y:top+rowH-uh,w,h:uh});}
+  if(qh) out.push({id:'qr',x:R.x+R.w-qh,y:top,w:qh,h:qh});
+  if(dh) out.push({id:'disclaimer',x:R.x,y:R.y+R.h-dh,w:R.w,h:dh});
+  if(o.inv) out.forEach(b=>b.inv=1);
+  return {boxes:out,rest:{x:R.x,y:R.y,w:R.w,h:R.h-tot-.035*m}};
+}
+function split(c,R,f,dir){const g=.05*c.m; if(dir==='h'){const w1=(R.w-g)*f; return [{x:R.x,y:R.y,w:w1,h:R.h},{x:R.x+w1+g,y:R.y,w:R.w-w1-g,h:R.h}];} const h1=(R.h-g)*f; return [{x:R.x,y:R.y,w:R.w,h:h1},{x:R.x,y:R.y+h1+g,w:R.w,h:R.h-h1-g}];}
+const inset=(R,p)=>({x:R.x+p,y:R.y+p,w:R.w-2*p,h:R.h-2*p});
+function column(c,R,segs,o){
+  o=o||{}; const gap=.04*c.m, al=o.align||'left';
+  const parts=[];
+  for(const s of segs){
+    if(s.vis){ if(hasVis(c)) parts.push(Object.assign({nat:0},s)); }
+    else{ const w=R.w*(s.wf||1); const n=measure(c,s.ids,w,Object.assign({},o,s)); if(n>0) parts.push(Object.assign({nat:n,w},s)); }
+  }
+  if(!parts.length) return [];
+  const nv=parts.filter(p=>p.vis).length, gaps=gap*(parts.length-1), th=parts.reduce((s,p)=>s+p.nat,0);
+  let vh=0, sc=1;
+  if(nv){ vh=Math.max((R.h-gaps-th)/nv,R.h*(o.minVis||.3)); if(o.maxVis) vh=Math.min(vh,R.h*o.maxVis); if(th>0) sc=Math.min(1,Math.max(.1,(R.h-gaps-vh*nv)/th)); }
+  else if(th>0) sc=Math.min(1,(R.h-gaps)/th);
+  const used=th*sc+vh*nv+gaps;
+  let y=R.y+(o.valign==='center'?Math.max(0,(R.h-used)/2):o.valign==='bottom'?Math.max(0,R.h-used):0);
+  const out=[];
+  for(const p of parts){
+    if(p.vis){ const w=R.w*(p.wf||1); const x=al==='left'?R.x:al==='right'?R.x+R.w-w:R.x+(R.w-w)/2; out.push(...visuals(c,{x,y,w,h:vh},p)); y+=vh+gap; }
+    else{ const h=p.nat*sc; const x=al==='left'?R.x:al==='right'?R.x+R.w-p.w:R.x+(R.w-p.w)/2; out.push(...stack(c,{x,y,w:p.w,h},p.ids,Object.assign({},o,p,{valign:'top'}))); y+=h+gap; }
+  }
+  return out;
+}
+function row(c,R,ids,o){ // left to right, vertically centred, used for strips
+  o=o||{}; const it=ids.filter(c.has); if(!it.length) return [];
+  const g=R.h*.35;
+  const sz=id=>{const h=R.h; switch(id){case 'cta':return {w:h*.62*3.2,h:h*.62};case 'logo':return {w:h*.5*3,h:h*.5};case 'qr':return {w:h*.85,h:h*.85};case 'url':return {w:h*3.2,h:h*.24};case 'date':return {w:h*3.4,h:h*.3};default:return {w:h*3,h:h*.4};}};
+  const s=it.map(id=>Object.assign({id},sz(id)));
+  let tot=s.reduce((a,b)=>a+b.w,0)+g*(s.length-1); const k=tot>R.w?R.w/tot:1;
+  s.forEach(b=>{b.w*=k;b.h*=Math.max(k,.6);});
+  let x=o.justify==='end'?R.x+R.w-tot*k:R.x;
+  return s.map(b=>{const r={id:b.id,x,y:R.y+(R.h-b.h)/2,w:b.w,h:b.h}; if(o.inv&&b.id!=='cta') r.inv=1; if(b.id==='cta'&&o.ctaLight) r.shape='light'; x+=b.w+g*k; return r;});
+}
+
+/* ---------- layout archetypes ---------- */
+const side=(c,flip,a,b)=>flip?b:a;
+const ARCH=[
+{id:'center-stack',name:'Centered stack',styles:['simple','straight'],
+ desc:()=> 'Everything sits on one central axis: logo at the top, headline and subheadline, the visual in the middle, then supporting copy and the CTA.',
+ build(c){let R=c.S;const out=[];const f=footer(c,R,'center');out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tc');out.push(...l.boxes);R=l.rest;
+  out.push(...column(c,R,[{ids:['badge','headline','subheadline']},{vis:1,wf:c.orient==='wide'?.5:.86,shape:'rounded'},{ids:['body','bullets','stat','testimonial','date','cta']}],{align:'center',valign:'center'}));return out;}},
+{id:'frame',name:'Framed minimal',styles:['simple'],
+ desc:()=> 'A thin line frame sits just inside the edges. The content is centered within it, with wide margins and plenty of empty space.',
+ build(c){const S=c.S,out=[{id:'frame',x:S.x,y:S.y,w:S.w,h:S.h}];let R=inset(S,.075*c.m);const f=footer(c,R,'center');out.push(...f.boxes);R=f.rest;
+  out.push(...column(c,R,[{ids:['logo']},{vis:1,wf:c.orient==='wide'?.34:.5,shape:'rounded'},{ids:['badge','headline','subheadline','body','bullets','stat','testimonial','date','cta']}],{align:'center',valign:'center',minVis:.24,maxVis:.4,hk:.8}));return out;}},
+{id:'quiet-corner',name:'Quiet corner',styles:['simple'],flips:[0,1],
+ desc:(c,f)=> f?'Copy anchored to the top-left, the visual tucked into the bottom-right corner, with open space left between them.':'The visual tucked into the top-right corner, copy anchored to the bottom-left, with open space left between them.',
+ build(c,flip){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const hv=hasVis(c),g=.05*c.m;
+  if(c.orient==='wide'){const vs=hv?Math.min(R.h*.78,R.w*.38):0;
+    if(hv) out.push(...visuals(c,{x:R.x+R.w-vs,y:flip?R.y+R.h-vs:R.y,w:vs,h:vs},{shape:'rounded'}));
+    out.push(...stack(c,{x:R.x,y:R.y,w:R.w-vs-g*2,h:R.h},MAIN,{valign:flip?'top':'bottom'}));return out;}
+  const vs=hv?Math.min(R.w*.5,R.h*.4):0;
+  if(!flip){ if(hv) out.push(...visuals(c,{x:R.x+R.w-vs,y:R.y,w:vs,h:vs},{shape:'rounded'})); out.push(...stack(c,{x:R.x,y:R.y+vs+g,w:R.w*.8,h:R.h-vs-g},MAIN,{valign:'bottom'})); }
+  else{ out.push(...stack(c,{x:R.x,y:R.y,w:R.w*.8,h:R.h-vs-g},MAIN,{valign:'top'})); if(hv) out.push(...visuals(c,{x:R.x+R.w-vs,y:R.y+R.h-vs,w:vs,h:vs},{shape:'rounded'})); }
+  return out;}},
+{id:'split',name:'Split screen',styles:['straight','marketing','simple'],flips:[0,1],needsVis:1,
+ label:(c,f)=>c.horiz?(f?'visual right':'visual left'):(f?'visual bottom':'visual top'),
+ desc:(c,f)=>`The canvas is cut in two. The visual runs edge to edge across the ${c.horiz?(f?'right':'left'):(f?'bottom':'top')} half and the copy sits in the other half.`,
+ build(c,flip){const {W,H,S}=c,g=.05*c.m,out=[];let R;
+  if(c.horiz){const half=W/2;out.push(...visuals(c,flip?{x:half,y:0,w:W-half,h:H}:{x:0,y:0,w:half,h:H},{flip:!flip}));R=flip?{x:S.x,y:S.y,w:half-g-S.x,h:S.h}:{x:half+g,y:S.y,w:S.x+S.w-half-g,h:S.h};}
+  else{const half=H*.5;out.push(...visuals(c,flip?{x:0,y:half,w:W,h:H-half}:{x:0,y:0,w:W,h:half}));R=flip?{x:S.x,y:S.y,w:S.w,h:half-g-S.y}:{x:S.x,y:half+g,w:S.w,h:S.y+S.h-half-g};}
+  const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;out.push(...stack(c,R,MAIN,{valign:'center'}));return out;}},
+{id:'photo-card',name:'Inset photo with copy',styles:['straight','simple'],flips:[0,1],needsVis:1,
+ label:(c,f)=>c.horiz?(f?'photo left':'photo right'):(f?'photo below':'photo above'),
+ desc:(c,f)=>`A rounded photo sits inside the margins ${c.horiz?(f?'on the left':'on the right'):(f?'below the copy':'above the copy')}, with the copy beside it. Clean and contained.`,
+ build(c,flip){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  if(c.horiz){const [a,b]=split(c,R,.48,'h');out.push(...visuals(c,flip?a:b,{shape:'rounded'}));out.push(...stack(c,flip?b:a,MAIN,{valign:'center'}));}
+  else out.push(...column(c,R,flip?[{ids:MAIN},{vis:1,shape:'rounded'}]:[{vis:1,shape:'rounded'},{ids:MAIN}],{minVis:.38}));
+  return out;}},
+{id:'z-pattern',name:'Z-pattern',styles:['straight','marketing'],needsVis:1,
+ desc:()=> 'Reads in a Z: logo and headline across the top, the visual on the lower right, then supporting copy and the CTA on the lower left.',
+ build(c){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const g=.05*c.m,topH=R.h*.36;out.push(...stack(c,{x:R.x,y:R.y,w:R.w*.74,h:topH},['badge','headline','subheadline']));
+  const y2=R.y+topH+g,h2=R.h-topH-g;out.push(...visuals(c,{x:R.x+R.w*.42,y:y2,w:R.w*.58,h:h2},{shape:'rounded',flip:1}));
+  out.push(...stack(c,{x:R.x,y:y2,w:R.w*.37,h:h2},['body','bullets','stat','testimonial','date','cta'],{valign:'bottom'}));return out;}},
+{id:'two-col',name:'Headline over two columns',styles:['straight'],flips:[0,1],needsVis:1,
+ label:(c,f)=>f?'visual left':'visual right',
+ desc:(c,f)=>`A full-width headline across the top, then two columns: supporting copy on the ${f?'right':'left'} and the visual on the ${f?'left':'right'}.`,
+ build(c,flip){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const topIds=['badge','headline','subheadline'];const topH=Math.min(measure(c,topIds,R.w,{}),R.h*.4);out.push(...stack(c,{x:R.x,y:R.y,w:R.w,h:topH},topIds));
+  const B={x:R.x,y:R.y+topH+.05*c.m,w:R.w,h:R.h-topH-.05*c.m};const [a,b]=split(c,B,.48,'h');
+  out.push(...visuals(c,flip?a:b,{shape:'rounded'}));out.push(...stack(c,flip?b:a,['body','bullets','stat','testimonial','date','cta']));return out;}},
+{id:'mobile-stack',name:'Thumb-stop stack',styles:['marketing','straight'],when:c=>c.orient!=='wide',
+ desc:()=> 'A mobile-first stack: headline on top, a big visual, short supporting copy, then a full-width CTA button at the bottom where the thumb lands.',
+ build(c){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  out.push(...column(c,R,[{ids:['badge','headline','subheadline']},{vis:1,shape:'rounded'},{ids:['body','bullets','stat','testimonial','date']},{ids:['cta'],ctaFull:1}],{minVis:.32}));return out;}},
+{id:'overlay',name:'Full-bleed overlay',styles:['marketing','creative'],flips:[0,1],needsVis:1,
+ label:(c,f)=>c.orient==='wide'?(f?'copy right':'copy left'):(f?'copy top':'copy bottom'),
+ desc:(c,f)=>`The visual fills the whole canvas. A dark gradient fades in on the ${c.orient==='wide'?(f?'right':'left'):(f?'top':'bottom')} and the copy sits on it in white.`,
+ build(c,flip){const {W,H,S,m}=c,out=[...visuals(c,{x:0,y:0,w:W,h:H},{z:0,flip:c.orient==='wide'?!flip:0})];let R=S;
+  const f=footer(c,R,'left',{inv:1});out.push(...f.boxes);R=f.rest;
+  if(c.orient==='wide'){out.push({id:'scrim',x:flip?W*.4:0,y:0,w:W*.6,h:H,dir:flip?'r':'l'});const l=logoAt(c,R,flip?'tr':'tl',{inv:1});out.push(...l.boxes);R=l.rest;
+    out.push(...stack(c,{x:flip?R.x+R.w*.46:R.x,y:R.y,w:R.w*.54,h:R.h},MAIN,{valign:'bottom',inv:1,align:'left'}));}
+  else{out.push({id:'scrim',x:0,y:flip?0:H*.36,w:W,h:H*.64,dir:flip?'t':'b'});const l=logoAt(c,R,'tl',{inv:1});out.push(...l.boxes);R=l.rest;
+    out.push(...stack(c,flip?{x:R.x,y:R.y,w:R.w*.9,h:R.h*.58}:{x:R.x,y:R.y+R.h*.4,w:R.w*.9,h:R.h*.6},MAIN,{valign:flip?'top':'bottom',inv:1}));}
+  return out;}},
+{id:'card',name:'Card over photo',styles:['marketing'],flips:[0,1],needsVis:1,
+ label:(c,f)=>c.orient==='wide'?(f?'card left':'card right'):(f?'card top':'card bottom'),
+ desc:(c,f)=>`The visual fills the canvas and a solid card sits over it ${c.orient==='wide'?(f?'on the left':'on the right'):(f?'near the top':'near the bottom')}, holding the logo, copy and CTA.`,
+ build(c,flip){const {W,H,S,m}=c,out=[...visuals(c,{x:0,y:0,w:W,h:H},{z:0})];let P;
+  if(c.orient==='wide'){const pw=S.w*.46;P={x:flip?S.x:S.x+S.w-pw,y:S.y,w:pw,h:S.h};}
+  else if(c.orient==='tall'){const ph=S.h*.5;P={x:S.x,y:flip?S.y:S.y+S.h-ph,w:S.w,h:ph};}
+  else{const pw=S.w*.74,ph=S.h*.6;P={x:S.x+(S.w-pw)/2,y:flip?S.y:S.y+S.h-ph,w:pw,h:ph};}
+  out.push(Object.assign({id:'panel'},P));let R=inset(P,.05*m);const f=footer(c,R,'center');out.push(...f.boxes);R=f.rest;
+  out.push(...column(c,R,[{ids:['logo','badge','headline','subheadline','body','bullets','stat','testimonial','date','cta']}],{align:c.orient==='wide'?'left':'center',valign:'center'}));return out;}},
+{id:'promo-bar',name:'Promo with CTA bar',styles:['marketing'],
+ desc:c=> 'The visual and headline up top, then a full-width colour bar along the bottom carrying the CTA'+(c.has('date')?' and the date':'')+'.'+(c.has('badge')?' A round sticker sits on the visual with the offer.':''),
+ build(c){const {W,H,S,m}=c,out=[];const barH=.17*m,barTop=S.y+S.h-barH;out.push({id:'bar',x:0,y:barTop,w:W,h:H-barTop});
+  const bh=S.y+S.h-barTop;let rx=S.x+S.w;
+  if(c.has('cta')){const cw=Math.min(.36*m,S.w*.48),ch=Math.min(.09*m,bh*.75);out.push({id:'cta',x:rx-cw,y:barTop+(bh-ch)/2,w:cw,h:ch,shape:'light'});rx-=cw+.04*m;}
+  if(c.has('qr')){const q=Math.min(.12*m,bh*.85);out.push({id:'qr',x:rx-q,y:barTop+(bh-q)/2,w:q,h:q,inv:1});rx-=q+.04*m;}
+  out.push(...stack(c,{x:S.x,y:barTop,w:Math.max(0,rx-S.x-.02*m),h:bh},['date','url'],{valign:'center',inv:1}));
+  let R={x:S.x,y:S.y,w:S.w,h:barTop-S.y-.045*m};
+  if(c.has('disclaimer')){out.push({id:'disclaimer',x:S.x,y:R.y+R.h-.03*m,w:S.w,h:.03*m});R.h-=.055*m;}
+  const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const body=['headline','subheadline','body','bullets','stat','testimonial'];
+  if(c.orient==='wide'){const [a,b]=split(c,R,.55,'h');out.push(...stack(c,a,body,{valign:'center'}));out.push(...visuals(c,b,{shape:'rounded'}));}
+  else out.push(...column(c,R,[{vis:1,shape:'rounded'},{ids:body}],{minVis:.4}));
+  if(c.has('badge')){const vb=out.find(b=>VIS.includes(b.id))||out.find(b=>b.id==='headline');const d=.22*m;
+    if(vb){let x=vb.x+vb.w-d*.85,y=vb.y-d*.15;x=Math.min(x,S.x+S.w-d);y=Math.max(y,S.y);out.push({id:'badge',x,y,w:d,h:d,shape:'sticker',z:3.5});}}
+  return out;}},
+{id:'bento',name:'Bento grid',styles:['marketing','creative'],needsVis:1,
+ desc:()=> 'Content split into rounded tiles of different sizes: a large one for the visual, one for the headline, one for the supporting detail and a coloured one for the CTA.',
+ build(c){const {S,m}=c,out=[];let R=S;
+  if(c.has('disclaimer')){out.push({id:'disclaimer',x:R.x,y:R.y+R.h-.03*m,w:R.w,h:.03*m});R={x:R.x,y:R.y,w:R.w,h:R.h-.055*m};}
+  const g=.03*m,p=.045*m,sec=['body','bullets','stat','testimonial','date'].filter(c.has);let A,B,C,D;
+  if(c.orient==='wide'){const cw=(R.w-2*g)/3,rh=(R.h-g)/2;A={x:R.x,y:R.y,w:cw,h:R.h};B={x:R.x+cw+g,y:R.y,w:cw*2+g,h:rh};
+    if(sec.length){C={x:R.x+cw+g,y:R.y+rh+g,w:cw,h:rh};D={x:R.x+2*(cw+g),y:R.y+rh+g,w:cw,h:rh};}else D={x:R.x+cw+g,y:R.y+rh+g,w:cw*2+g,h:rh};}
+  else{const h1=R.h*.32,h3=R.h*.16,h2=R.h-h1-h3-2*g;B={x:R.x,y:R.y,w:R.w,h:h1};
+    if(sec.length){const w1=(R.w-g)*.58;A={x:R.x,y:R.y+h1+g,w:w1,h:h2};C={x:R.x+w1+g,y:A.y,w:R.w-w1-g,h:h2};}else A={x:R.x,y:R.y+h1+g,w:R.w,h:h2};
+    D={x:R.x,y:R.y+h1+h2+2*g,w:R.w,h:h3};}
+  out.push(...visuals(c,A,{shape:'rounded'}));out.push(Object.assign({id:'tile'},B));if(C) out.push(Object.assign({id:'tile'},C));out.push(Object.assign({id:'tile',tone:'accent'},D));
+  out.push(...stack(c,inset(B,p),['logo','badge','headline','subheadline'],{valign:'center'}));
+  if(C) out.push(...stack(c,inset(C,p),sec,{valign:'center'}));
+  const Di=inset(D,p*.8);
+  if(Di.w>Di.h*2.2) out.push(...row(c,Di,['cta','url','qr'],{inv:1,ctaLight:1}));
+  else out.push(...stack(c,Di,['cta','url','qr'],{valign:'center',inv:1,ctaLight:1}));
+  return out;}},
+{id:'hero-sticker',name:'Hero with sticker',styles:['marketing'],flips:[0,1],needsVis:1,needsAny:['badge','stat'],
+ label:(c,f)=>f?'mirrored':'',
+ desc:c=> `The visual and copy sit side by side, with a round sticker on the seam between them carrying the ${c.has('badge')?'offer or tag':'key number'}.`,
+ build(c,flip){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const st=c.has('badge')?'badge':'stat',dir=c.horiz?'h':'v';const [a,b]=split(c,R,.5,dir);const vis=flip?b:a,txt=flip?a:b;
+  out.push(...visuals(c,vis,{shape:'rounded'}));out.push(...stack(c,txt,MAIN.filter(i=>i!==st),{valign:'center'}));
+  const d=.24*c.m;let x,y;
+  if(dir==='h'){x=flip?vis.x-d/2:vis.x+vis.w-d/2;y=vis.y+vis.h*.08;}else{x=vis.x+vis.w-d*1.1;y=flip?vis.y-d/2:vis.y+vis.h-d/2;}
+  out.push({id:st,x,y,w:d,h:d,shape:'sticker',z:3.5});return out;}},
+{id:'big-type',name:'Oversized headline',styles:['creative','simple'],
+ desc:()=> 'An oversized headline takes over the top of the canvas. Everything else stays small: supporting copy bottom-left and a circular visual bottom-right.',
+ build(c){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;
+  const hv=hasVis(c),d=hv?Math.min(R.w*.42,R.h*.38):0,restIds=['subheadline','body','bullets','stat','testimonial','date','cta'];
+  const restH=measure(c,restIds,R.w*.52,{}),bottomH=Math.min(Math.max(restH,d),R.h*.55),g=.05*c.m;
+  out.push(...stack(c,{x:R.x,y:R.y,w:R.w,h:R.h-bottomH-g},['badge','headline'],{hk:2.4}));
+  const by=R.y+R.h-bottomH;out.push(...stack(c,{x:R.x,y:by,w:hv?R.w-d-g:R.w*.6,h:bottomH},restIds,{valign:'bottom'}));
+  if(hv) out.push(...visuals(c,{x:R.x+R.w-d,y:R.y+R.h-d,w:d,h:d},{shape:'circle'}));return out;}},
+{id:'diagonal',name:'Diagonal cut',styles:['creative'],flips:[0,1],needsVis:1,
+ label:(c,f)=>c.horiz?(f?'visual left':'visual right'):(f?'visual bottom':'visual top'),
+ desc:(c,f)=>`The visual is cut with a strong diagonal edge and fills the ${c.horiz?(f?'left':'right'):(f?'bottom':'top')} of the canvas. The copy sits on the clean side.`,
+ build(c,flip){const {W,H,S,m}=c,g=.05*m,out=[];let R;
+  if(c.horiz){const vw=W*.56;if(!flip){const V={x:W-vw,y:0,w:vw,h:H};out.push(...visuals(c,V,{shape:'diag-l',flip:0}));R={x:S.x,y:S.y,w:V.x-g-S.x,h:S.h};}
+    else{const V={x:0,y:0,w:vw,h:H};out.push(...visuals(c,V,{shape:'diag-r',flip:1}));const x0=V.x+V.w+g;R={x:x0,y:S.y,w:S.x+S.w-x0,h:S.h};}}
+  else{const vh=H*.54;if(!flip){const V={x:0,y:0,w:W,h:vh};out.push(...visuals(c,V,{shape:'diag-b'}));const y0=vh+g;R={x:S.x,y:y0,w:S.w,h:S.y+S.h-y0};}
+    else{const V={x:0,y:H-vh,w:W,h:vh};out.push(...visuals(c,V,{shape:'diag-t'}));R={x:S.x,y:S.y,w:S.w,h:V.y-g-S.y};}}
+  const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;out.push(...stack(c,R,MAIN,{valign:'center'}));return out;}},
+{id:'circle',name:'Circle crop',styles:['creative'],flips:[0,1],needsVis:1,
+ label:(c,f)=>f?'circle left':'circle right',
+ desc:(c,f)=>`A large circular crop of the visual runs off the ${c.horiz?(f?'left':'right'):'top '+(f?'left':'right')} edge of the canvas, with the copy in the remaining space.`,
+ build(c,flip){const {W,H,S,m}=c,g=.05*m,out=[];let R;
+  if(c.horiz){const d=Math.min(H*1.05,W*.64),cx=flip?W*.2:W*.8;const V={x:cx-d/2,y:(H-d)/2,w:d,h:d};out.push(...visuals(c,V,{shape:'circle',flip:!flip}));
+    R=flip?{x:V.x+V.w+g,y:S.y,w:S.x+S.w-(V.x+V.w+g),h:S.h}:{x:S.x,y:S.y,w:V.x-g-S.x,h:S.h};}
+  else{const d=W*1.02,cx=flip?W*.36:W*.64,cy=Math.min(H*.3,d*.5);const V={x:cx-d/2,y:cy-d/2,w:d,h:d};out.push(...visuals(c,V,{shape:'circle'}));const y0=V.y+V.h+g;R={x:S.x,y:Math.max(y0,S.y),w:S.w,h:S.y+S.h-Math.max(y0,S.y)};}
+  const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;out.push(...stack(c,R,MAIN,{valign:'center'}));return out;}},
+{id:'offset-overlap',name:'Offset overlap',styles:['creative'],flips:[0,1],needsVis:1,
+ label:(c,f)=>f?'visual left':'visual right',
+ desc:(c,f)=>`A large visual on the ${f?'left':'right'} with a solid text panel overlapping its lower ${f?'right':'left'} corner, which adds depth.`,
+ build(c,flip){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,flip?'tr':'tl');out.push(...l.boxes);R=l.rest;
+  const V={x:flip?R.x:R.x+R.w*.3,y:R.y,w:R.w*.7,h:R.h*.62};out.push(...visuals(c,V,{flip:!flip}));
+  const P={x:flip?R.x+R.w*.32:R.x,y:R.y+R.h*.44,w:R.w*.68,h:R.h*.56};out.push(Object.assign({id:'panel'},P));
+  out.push(...stack(c,inset(P,.05*c.m),MAIN,{valign:'center'}));return out;}},
+{id:'vertical-type',name:'Vertical headline',styles:['creative'],needsAny:['headline'],when:c=>c.orient!=='wide',
+ desc:()=> 'The headline is set vertically along the left edge, reading bottom to top. The visual and the remaining copy fill the space to its right.',
+ build(c){const out=[];let R=c.S;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const m=c.m;const hw=Math.min(.19*m,R.w*.24);
+  out.push({id:'headline',x:R.x,y:R.y,w:hw,h:R.h,shape:'vertical'});let Q={x:R.x+hw+.05*m,y:R.y,w:R.w-hw-.05*m,h:R.h};
+  const l=logoAt(c,Q,'tr');out.push(...l.boxes);Q=l.rest;
+  out.push(...column(c,Q,[{vis:1,shape:'rounded'},{ids:['badge','subheadline','body','bullets','stat','testimonial','date','cta']}],{minVis:.45}));return out;}},
+{id:'layered',name:'Layered blocks',styles:['creative','marketing'],flips:[0,1],needsVis:1,
+ label:(c,f)=>f?'mirrored':'',
+ desc:(c,f)=> 'The visual sits on a flat colour block offset behind it, like layered paper, with the copy alongside.',
+ build(c,flip){const out=[];let R=c.S;const m=c.m,o=.05*m;const f=footer(c,R);out.push(...f.boxes);R=f.rest;const l=logoAt(c,R,'tl');out.push(...l.boxes);R=l.rest;let V,T;
+  if(c.horiz){const [a,b]=split(c,R,.52,'h');const A=flip?b:a;T=flip?a:b;V={x:A.x+(flip?o:0),y:A.y,w:A.w-o,h:A.h-o};}
+  else{const [a,b]=split(c,R,.5,'v');V={x:a.x+(flip?o:0),y:a.y,w:a.w-o,h:a.h-o};T=b;}
+  out.push({id:'block',x:V.x+(flip?-o:o),y:V.y+o,w:V.w,h:V.h,z:.5});out.push(...visuals(c,V));out.push(...stack(c,T,MAIN,{valign:'center'}));return out;}}
+];
+
+const BANNER=[
+{id:'b-row',name:'Single line',styles:['simple','straight'],
+ desc:()=> 'One horizontal line: logo on the left, headline in the middle, CTA on the right.',
+ build(c){return bannerLine(c,c.S,{align:'left'});}},
+{id:'b-center',name:'Centered message',styles:['simple'],
+ desc:()=> 'Logo pinned left, CTA pinned right, and the headline centered between them.',
+ build(c){return bannerLine(c,c.S,{align:'center'});}},
+{id:'b-visual',name:'Visual lead-in',styles:['straight','marketing'],needsVis:1,
+ desc:()=> 'The visual is locked to the left edge, then the logo, headline and CTA run to the right.',
+ build(c){const {W,H,S}=c;const vw=Math.min(W*.3,H*1.7);const out=visuals(c,{x:0,y:0,w:vw,h:H});const g=S.h*.4;
+  return out.concat(bannerLine(c,{x:vw+g,y:S.y,w:S.x+S.w-vw-g,h:S.h},{align:'left'}));}},
+{id:'b-overlay',name:'Photo banner',styles:['marketing','creative'],needsVis:1,
+ desc:()=> 'The visual fills the banner. A dark gradient on the left carries the logo and headline in white, with the CTA on the right.',
+ build(c){const {W,H,S}=c;const out=visuals(c,{x:0,y:0,w:W,h:H},{z:0,flip:1});out.push({id:'scrim',x:0,y:0,w:W*.7,h:H,dir:'l'});return out.concat(bannerLine(c,S,{align:'left',inv:1}));}},
+{id:'b-diagonal',name:'Diagonal block',styles:['creative'],
+ desc:()=> 'A solid colour block with a diagonal edge holds the logo and headline. The visual shows through on the right next to the CTA.',
+ build(c){const {W,H,S}=c;const out=hasVis(c)?visuals(c,{x:W*.45,y:0,w:W*.55,h:H},{z:0}):[];const bw=W*.58;out.push({id:'diagblock',x:0,y:0,w:bw,h:H});
+  return out.concat(bannerLine(c,S,{align:'left',inv:1,textMax:bw-S.x-H*.6,ctaLight:0}));}}
+];
+function bannerLine(c,R,o){
+  const out=[],h=R.h,g=h*.35;let x1=R.x,x2=R.x+R.w;
+  if(c.has('logo')){const lh=h*.48,lw=Math.min(lh*3,R.w*.2);out.push({id:'logo',x:x1,y:R.y+(h-lh)/2,w:lw,h:lh,inv:o.inv?1:0});x1+=lw+g;}
+  const right=row(c,{x:R.x,y:R.y,w:R.w*.4,h},['qr','cta'],{justify:'start'});
+  const rw=right.length?right[right.length-1].x+right[right.length-1].w-R.x:0;
+  right.forEach(b=>{b.x+=R.x+R.w-rw-R.x; if(b.id==='qr'&&o.inv) b.inv=1;});out.push(...right);if(rw) x2-=rw+g;
+  let tw=x2-x1;if(o.textMax) tw=Math.min(tw,o.textMax-(x1-R.x));
+  let T={x:x1,y:R.y,w:tw,h};
+  if(c.has('disclaimer')){const dh=h*.14;out.push({id:'disclaimer',x:x1,y:R.y+h-dh,w:tw,h:dh,inv:o.inv?1:0});T.h-=dh*1.6;}
+  const ids=['badge','headline','subheadline','body','stat','date','url'].filter(c.has);
+  if(ids.length){const wts={badge:.22,headline:.5,subheadline:.28,body:.3,stat:.36,date:.22,url:.2};let tot=ids.reduce((s,i)=>s+wts[i],0)+.08*(ids.length-1);const k=T.h/Math.max(tot,.9);let y=T.y+Math.max(0,(T.h-tot*k)/2);
+    ids.forEach(id=>{const hh=wts[id]*k;let w=['headline','subheadline','body'].includes(id)?T.w*(id==='headline'?1:.85):Math.min(T.w*.5,hh*(id==='badge'?4:id==='stat'?3:6));const x=o.align==='center'?T.x+(T.w-w)/2:T.x;out.push({id,x,y,w,h:hh,inv:o.inv?1:0});y+=hh+.08*k;});}
+  if(hasVis(c)&&!out.some(b=>VIS.includes(b.id))){} // banner layouts that need visuals add them themselves
+  return out;
+}
+
+/* ---------- context & generation ---------- */
+function currentFormat(st){st=st||state;const f=FORMATS.find(x=>x.id===st.fmt)||FORMATS[1];if(f.id==='custom') return Object.assign({},f,{w:clampDim(st.cw),h:clampDim(st.ch)});return f;}
+function clampDim(v){v=Math.round(+v||0);return Math.min(10000,Math.max(50,v));}
+function makeCtx(st){st=st||state;
+  const f=currentFormat(st),W=f.w,H=f.h,m=Math.min(W,H),asp=W/H,els=new Set(st.els),a=st.amt/100,sd=new Set(st.sides);
+  const b={t:sd.has('t')?H*a:0,b:sd.has('b')?H*a:0,l:sd.has('l')?W*a:0,r:sd.has('r')?W*a:0};
+  const banner=asp>2.4;const mg=banner?.12*H:.055*m;
+  const S={x:b.l+mg,y:b.t+(banner?Math.max(mg,0):mg),w:W-b.l-b.r-2*mg,h:H-b.t-b.b-2*mg};
+  return {st,f,W,H,m,asp,banner,b,mg,S,has:id=>els.has(id),orient:asp>1.25?'wide':asp<.85?'tall':'square',horiz:asp>=.85};
+}
+function generate(c){
+  const list=c.banner?BANNER:ARCH,out=[];
+  for(const A of list){
+    if(c.st.style!=='all'&&!A.styles.includes(c.st.style)) continue;
+    if(A.needsVis&&!hasVis(c)) continue;
+    if(A.needsAny&&!A.needsAny.some(c.has)) continue;
+    if(A.when&&!A.when(c)) continue;
+    for(const flip of (A.flips||[0])){
+      let boxes; try{boxes=A.build(c,flip).filter(b=>b&&b.w>0.5&&b.h>0.5);}catch(e){console.error(A.id,e);continue;}
+      if(!boxes.some(b=>NAMES[b.id])) continue;
+      const lab=A.label?A.label(c,flip):(flip?'mirrored':'');
+      out.push({uid:A.id+'-'+flip,arch:A,flip,boxes,name:A.name,variant:lab,desc:A.desc(c,flip),style:c.st.style!=='all'?c.st.style:A.styles[0],styles:A.styles});
+    }
+  }
+  return out;
+}
+
+/* ---------- SVG rendering ---------- */
+const r1=n=>Math.round(n*10)/10;
+const DECOR=new Set(['scrim','panel','tile','bar','frame','block','diagblock']);
+function zOf(b){if(b.z!=null) return b.z; if(VIS.includes(b.id)) return .8; return {scrim:1,panel:1.5,tile:1,bar:1,frame:4,block:.5,diagblock:1}[b.id]??3;}
+function shapeEl(b,attrs){const {x,y,w,h}=b;const P=pts=>`<polygon points="${pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ')}" ${attrs}/>`;
+  switch(b.shape){
+    case 'circle':case 'sticker':return `<ellipse cx="${r1(x+w/2)}" cy="${r1(y+h/2)}" rx="${r1(w/2)}" ry="${r1(h/2)}" ${attrs}/>`;
+    case 'diag-l':return P([[x+w*.26,y],[x+w,y],[x+w,y+h],[x,y+h]]);
+    case 'diag-r':return P([[x,y],[x+w,y],[x+w*.74,y+h],[x,y+h]]);
+    case 'diag-b':return P([[x,y],[x+w,y],[x+w,y+h*.7],[x,y+h]]);
+    case 'diag-t':return P([[x,y+h*.3],[x+w,y],[x+w,y+h],[x,y+h]]);
+    case 'rounded':return `<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(Math.min(w,h)*.06)}" ${attrs}/>`;
+    default:return `<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" ${attrs}/>`;
+  }}
+function bars(x,y,w,h,n,thick,widths,fill,align){let s='';const lh=h/n;for(let i=0;i<n;i++){const bw=w*(widths[i%widths.length]);const bh=lh*thick;const bx=align==='center'?x+(w-bw)/2:x;s+=`<rect x="${r1(bx)}" y="${r1(y+i*lh+(lh-bh)/2)}" width="${r1(bw)}" height="${r1(bh)}" rx="${r1(bh*.25)}" fill="${fill}"/>`;}return s;}
+function renderSVG(L,c,opt){
+  opt=opt||{};const {W,H,m}=c,uid=(opt.prefix||'p')+L.uid;let defs='',body='';const sw=Math.max(1,m*.004);
+  // background
+  const bg=c.st.bg;
+  if(bg==='gradient'){defs+=`<linearGradient id="g-${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--wf-g1)"/><stop offset="1" stop-color="var(--wf-g2)"/></linearGradient>`;body+=`<rect width="${W}" height="${H}" fill="url(#g-${uid})"/>`;}
+  else if(bg==='photo'){body+=`<rect width="${W}" height="${H}" fill="var(--wf-photo)"/><polygon points="0,${r1(H*.78)} ${r1(W*.3)},${r1(H*.5)} ${r1(W*.5)},${r1(H*.66)} ${r1(W*.72)},${r1(H*.42)} ${W},${r1(H*.7)} ${W},${H} 0,${H}" fill="var(--wf-photo2)"/>`;}
+  else if(bg==='pattern'){const s=m*.05;defs+=`<pattern id="pt-${uid}" width="${r1(s)}" height="${r1(s)}" patternUnits="userSpaceOnUse"><circle cx="${r1(s/2)}" cy="${r1(s/2)}" r="${r1(s*.1)}" fill="var(--wf-dot)"/></pattern>`;body+=`<rect width="${W}" height="${H}" fill="var(--wf-canvas)"/><rect width="${W}" height="${H}" fill="url(#pt-${uid})"/>`;}
+  else if(bg==='shapes'){body+=`<rect width="${W}" height="${H}" fill="var(--wf-canvas)"/><circle cx="${r1(W*.92)}" cy="${r1(H*.1)}" r="${r1(m*.3)}" fill="var(--wf-shape)"/><circle cx="${r1(W*.05)}" cy="${r1(H*.95)}" r="${r1(m*.22)}" fill="var(--wf-shape)"/>`;}
+  else body+=`<rect width="${W}" height="${H}" fill="var(--wf-solid)"/>`;
+  const boxes=L.boxes.slice().sort((a,b)=>zOf(a)-zOf(b));
+  boxes.forEach((b,i)=>{body+=drawBox(b,c,uid+'-'+i,sw,(d)=>defs+=d);});
+  // crop zones
+  const cz=[];const bl=c.b;
+  if(bl.t) cz.push([0,0,W,bl.t]); if(bl.b) cz.push([0,H-bl.b,W,bl.b]); if(bl.l) cz.push([0,0,bl.l,H]); if(bl.r) cz.push([W-bl.r,0,bl.r,H]);
+  if(cz.length){const s=m*.025;defs+=`<pattern id="h-${uid}" width="${r1(s)}" height="${r1(s)}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${r1(s*.35)}" height="${r1(s)}" fill="var(--crop)" opacity=".55"/></pattern>`;
+    cz.forEach(z=>body+=`<rect x="${r1(z[0])}" y="${r1(z[1])}" width="${r1(z[2])}" height="${r1(z[3])}" fill="url(#h-${uid})"/>`);
+    body+=`<rect x="${r1(bl.l)}" y="${r1(bl.t)}" width="${r1(W-bl.l-bl.r)}" height="${r1(H-bl.t-bl.b)}" fill="none" stroke="var(--crop)" stroke-width="${r1(sw*1.2)}" stroke-dasharray="${r1(sw*5)} ${r1(sw*3)}"/>`;}
+  if(opt.labels){boxes.forEach(b=>{if(!NAMES[b.id]) return;const fs=Math.max(8,m*.026);const t=NAMES[b.id];const tw=t.length*fs*.56+fs*.8;let lx=Math.max(0,Math.min(b.x,W-tw)),ly=Math.max(0,Math.min(b.y,H-fs*1.5));
+    body+=`<g><rect x="${r1(lx)}" y="${r1(ly)}" width="${r1(tw)}" height="${r1(fs*1.5)}" rx="${r1(fs*.3)}" fill="var(--ink)" opacity=".86"/><text x="${r1(lx+fs*.4)}" y="${r1(ly+fs*1.08)}" font-size="${r1(fs)}" font-family="Geist, system-ui, sans-serif" font-weight="600" fill="var(--bg)">${t}</text></g>`;});}
+  body+=`<rect x="${r1(sw/2)}" y="${r1(sw/2)}" width="${r1(W-sw)}" height="${r1(H-sw)}" fill="none" stroke="var(--wf-line)" stroke-width="${r1(sw)}"/>`;
+  const ar=opt.size?`width="${opt.size.w}" height="${opt.size.h}"`:'';
+  return `<svg viewBox="0 0 ${W} ${H}" ${ar} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(L.name)} wireframe"><defs>${defs}</defs>${body}</svg>`;
+}
+function drawBox(b,c,id,sw,addDef){
+  const {x,y,w,h}=b,m=c.m,ink=b.inv?'var(--wf-inv)':'var(--wf-ink)',ink2=b.inv?'var(--wf-inv2)':'var(--wf-ink2)';let s='';
+  switch(b.id){
+    case 'image':case 'person':case 'icon':{
+      addDef(`<clipPath id="c-${id}">${shapeEl(b,'')}</clipPath>`);
+      if(b.shape==='cutout'){s+=`<g><circle cx="${r1(x+w/2)}" cy="${r1(y+h*.36)}" r="${r1(Math.min(w,h)*.2)}" fill="var(--wf-vis2)"/><path d="M${r1(x+w*.12)} ${r1(y+h)} C ${r1(x+w*.14)} ${r1(y+h*.62)}, ${r1(x+w*.86)} ${r1(y+h*.62)}, ${r1(x+w*.88)} ${r1(y+h)} Z" fill="var(--wf-vis2)"/></g>`;break;}
+      const fill=b.id==='icon'?'var(--wf-icon)':'var(--wf-vis)',f2=b.id==='icon'?'var(--wf-icon2)':'var(--wf-vis2)';
+      s+=`<g clip-path="url(#c-${id})"><rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" fill="${fill}"/>`;
+      if(b.id==='image'){s+=`<polygon points="${r1(x)},${r1(y+h*.82)} ${r1(x+w*.34)},${r1(y+h*.46)} ${r1(x+w*.55)},${r1(y+h*.66)} ${r1(x+w*.72)},${r1(y+h*.5)} ${r1(x+w)},${r1(y+h*.8)} ${r1(x+w)},${r1(y+h)} ${r1(x)},${r1(y+h)}" fill="${f2}"/><circle cx="${r1(x+w*.72)}" cy="${r1(y+h*.27)}" r="${r1(Math.min(w,h)*.08)}" fill="${f2}"/>`;}
+      else if(b.id==='person'){const r=Math.min(w,h)*.17;s+=`<circle cx="${r1(x+w/2)}" cy="${r1(y+h*.4)}" r="${r1(r)}" fill="${f2}"/><ellipse cx="${r1(x+w/2)}" cy="${r1(y+h*.98)}" rx="${r1(Math.min(w*.4,r*2.4))}" ry="${r1(h*.3)}" fill="${f2}"/>`;}
+      else{const r=Math.min(w,h)*.18;s+=`<circle cx="${r1(x+w*.42)}" cy="${r1(y+h*.46)}" r="${r1(r)}" fill="${f2}"/><rect x="${r1(x+w*.48)}" y="${r1(y+h*.5)}" width="${r1(r*1.5)}" height="${r1(r*1.5)}" rx="${r1(r*.3)}" fill="${f2}" opacity=".7"/>`;}
+      s+=`</g>`;break;}
+    case 'headline':{
+      if(b.shape==='vertical'){const n=2,lw=w/n;for(let i=0;i<n;i++){const bw=lw*.62,bh=h*(i?0.6:0.92);s+=`<rect x="${r1(x+i*lw+(lw-bw)/2)}" y="${r1(y+h-bh)}" width="${r1(bw)}" height="${r1(bh)}" rx="${r1(bw*.2)}" fill="${ink}"/>`;}break;}
+      const n=Math.max(1,Math.min(3,Math.round(h/(m*.075))));s+=bars(x,y,w,h,n,.62,[1,.74,.88],ink,b.align);break;}
+    case 'subheadline':s+=bars(x,y,w,h,Math.max(1,Math.min(2,Math.round(h/(m*.04)))),.5,[.92,.62],ink2);break;
+    case 'body':s+=bars(x,y,w,h,3,.42,[1,.96,.68],ink2);break;
+    case 'bullets':{const lh=h/3;for(let i=0;i<3;i++){const cy=y+i*lh+lh/2,r=lh*.18;s+=`<circle cx="${r1(x+r)}" cy="${r1(cy)}" r="${r1(r)}" fill="var(--accent)"/><rect x="${r1(x+r*3.2)}" y="${r1(cy-lh*.18)}" width="${r1((w-r*3.2)*[.9,.75,.82][i])}" height="${r1(lh*.36)}" rx="${r1(lh*.08)}" fill="${ink2}"/>`;}break;}
+    case 'stat':if(b.shape==='sticker'){s+=`<circle cx="${r1(x+w/2)}" cy="${r1(y+h/2)}" r="${r1(w/2)}" fill="var(--wf-badge)"/><rect x="${r1(x+w*.3)}" y="${r1(y+h*.32)}" width="${r1(w*.4)}" height="${r1(h*.2)}" rx="${r1(h*.04)}" fill="var(--wf-ink)"/><rect x="${r1(x+w*.26)}" y="${r1(y+h*.6)}" width="${r1(w*.48)}" height="${r1(h*.07)}" rx="${r1(h*.03)}" fill="var(--wf-ink)" opacity=".6"/>`;break;}
+      s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w*.55)}" height="${r1(h*.58)}" rx="${r1(h*.08)}" fill="${ink}"/><rect x="${r1(x)}" y="${r1(y+h*.74)}" width="${r1(w*.85)}" height="${r1(h*.16)}" rx="${r1(h*.05)}" fill="${ink2}"/>`;break;
+    case 'testimonial':{const q=h*.28;s+=`<text x="${r1(x)}" y="${r1(y+q*1.4)}" font-size="${r1(q*1.8)}" font-family="Georgia, serif" font-weight="700" fill="var(--accent)">&#8220;</text>`+bars(x+q*1.3,y,w-q*1.3,h*.7,2,.42,[1,.8],ink)+`<rect x="${r1(x+q*1.3)}" y="${r1(y+h*.78)}" width="${r1(w*.3)}" height="${r1(h*.12)}" rx="${r1(h*.04)}" fill="${ink2}"/>`;break;}
+    case 'date':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(h)}" height="${r1(h)}" rx="${r1(h*.2)}" fill="none" stroke="${ink}" stroke-width="${r1(Math.max(1,h*.1))}"/><rect x="${r1(x+h*1.4)}" y="${r1(y+h*.28)}" width="${r1(Math.max(0,w-h*1.4))}" height="${r1(h*.44)}" rx="${r1(h*.1)}" fill="${ink}"/>`;break;
+    case 'url':s+=`<rect x="${r1(x)}" y="${r1(y+h*.2)}" width="${r1(w*.9)}" height="${r1(h*.6)}" rx="${r1(h*.2)}" fill="${ink2}"/>`;break;
+    case 'disclaimer':s+=`<rect x="${r1(x)}" y="${r1(y+h*.3)}" width="${r1(w)}" height="${r1(h*.4)}" rx="${r1(h*.15)}" fill="${ink2}" opacity=".75"/>`;break;
+    case 'cta':{const light=b.shape==='light';s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(Math.min(h*.5,m*.03))}" fill="${light?'var(--wf-canvas)':'var(--accent)'}"/><rect x="${r1(x+w*.28)}" y="${r1(y+h*.4)}" width="${r1(w*.44)}" height="${r1(h*.2)}" rx="${r1(h*.08)}" fill="${light?'var(--accent)':'var(--wf-on-accent)'}"/>`;break;}
+    case 'logo':{const fs=h*.42;s+=`<rect x="${r1(x+sw/2)}" y="${r1(y+sw/2)}" width="${r1(w-sw)}" height="${r1(h-sw)}" rx="${r1(h*.22)}" fill="none" stroke="${ink}" stroke-width="${r1(sw)}" stroke-dasharray="${r1(sw*3)} ${r1(sw*2)}"/><text x="${r1(x+w/2)}" y="${r1(y+h/2+fs*.36)}" text-anchor="middle" font-size="${r1(fs)}" font-family="Geist, system-ui, sans-serif" font-weight="700" letter-spacing="${r1(fs*.12)}" fill="${ink}">LOGO</text>`;break;}
+    case 'badge':{if(b.shape==='sticker'){s+=`<circle cx="${r1(x+w/2)}" cy="${r1(y+h/2)}" r="${r1(w/2)}" fill="var(--wf-badge)"/><rect x="${r1(x+w*.24)}" y="${r1(y+h*.4)}" width="${r1(w*.52)}" height="${r1(h*.08)}" rx="${r1(h*.03)}" fill="var(--wf-ink)"/><rect x="${r1(x+w*.32)}" y="${r1(y+h*.53)}" width="${r1(w*.36)}" height="${r1(h*.06)}" rx="${r1(h*.03)}" fill="var(--wf-ink)" opacity=".6"/>`;break;}
+      s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(h/2)}" fill="var(--wf-badge)"/><rect x="${r1(x+w*.18)}" y="${r1(y+h*.38)}" width="${r1(w*.64)}" height="${r1(h*.24)}" rx="${r1(h*.1)}" fill="var(--wf-ink)"/>`;break;}
+    case 'stat-sticker':break;
+    case 'qr':{const q=w/7;s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(q*.4)}" fill="${b.inv?'var(--wf-inv)':'var(--wf-ink)'}"/>`;const cf=b.inv?'var(--wf-ink)':'var(--wf-canvas)';[[1,1],[4,1],[1,4]].forEach(p=>{s+=`<rect x="${r1(x+p[0]*q)}" y="${r1(y+p[1]*q)}" width="${r1(q*2)}" height="${r1(q*2)}" fill="${cf}"/>`;});s+=`<rect x="${r1(x+4.4*q)}" y="${r1(y+4.4*q)}" width="${r1(q*1.4)}" height="${r1(q*1.4)}" fill="${cf}"/>`;break;}
+    case 'scrim':{const d=b.dir||'b';const v={b:['0','0','0','1'],t:['0','1','0','0'],l:['1','0','0','0'],r:['0','0','1','0']}[d];addDef(`<linearGradient id="s-${id}" x1="${v[0]}" y1="${v[1]}" x2="${v[2]}" y2="${v[3]}"><stop offset="0" stop-color="var(--wf-scrim)" stop-opacity="0"/><stop offset=".55" stop-color="var(--wf-scrim)" stop-opacity=".55"/><stop offset="1" stop-color="var(--wf-scrim)" stop-opacity=".82"/></linearGradient>`);s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" fill="url(#s-${id})"/>`;break;}
+    case 'panel':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(m*.022)}" fill="var(--wf-panel)" stroke="var(--wf-line)" stroke-width="${r1(sw)}"/>`;break;
+    case 'tile':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${r1(m*.028)}" fill="${b.tone==='accent'?'var(--accent)':'var(--wf-tile)'}"/>`;break;
+    case 'bar':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" fill="var(--accent)"/>`;break;
+    case 'frame':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" fill="none" stroke="var(--wf-ink)" stroke-width="${r1(sw*1.2)}"/>`;break;
+    case 'block':s+=`<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" fill="var(--wf-block)"/>`;break;
+    case 'diagblock':s+=`<polygon points="0,0 ${r1(x+w)},0 ${r1(x+w*.82)},${r1(y+h)} 0,${r1(y+h)}" fill="var(--accent)"/>`;break;
+  }
+  return s;
+}
+// the stat element can also be a sticker
+const _draw=drawBox;
+
+/* ---------- prompt building ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));}
+function gcd(a,b){return b?gcd(b,a%b):a;}
+function ratioStr(W,H){const g=gcd(W,H),a=W/g,b=H/g;if(a<=21&&b<=21) return a+':'+b;return W>=H?(W/H).toFixed(2).replace(/\.?0+$/,'')+':1':'1:'+(H/W).toFixed(2).replace(/\.?0+$/,'');}
+const pct=v=>Math.round(Math.max(0,Math.min(1,v))*100);
+function where(b,c){const {W,H}=c;if(b.w>=W*.9&&b.h>=H*.9) return 'full canvas';const cx=(b.x+b.w/2)/W,cy=(b.y+b.h/2)/H;
+  const col=cx<.36?'left':cx>.64?'right':'center',rw=cy<.36?'top':cy>.64?'bottom':'middle';
+  if(b.w>=W*.85) return rw==='middle'?'middle, full width':rw+', full width';
+  if(b.h>=H*.85) return col==='center'?'center, full height':col+' side, full height';
+  return rw==='middle'&&col==='center'?'center':rw==='middle'?'middle '+col:col==='center'?rw+' center':rw+'-'+col;}
+function offEdge(b,c){const e=[];if(b.x<-1)e.push('left');if(b.y<-1)e.push('top');if(b.x+b.w>c.W+1)e.push('right');if(b.y+b.h>c.H+1)e.push('bottom');return e;}
+function txt(k){return (state.text[k]||'').trim();}
+function elementBrief(b,L,c){
+  const t=s=>s?`"${s}"`:'';const notes=[];const id=b.id;
+  switch(id){
+    case 'logo':notes.push('Logo area. Keep it a plain, empty placeholder so the real logo can be dropped in afterwards; do not invent a logo.');break;
+    case 'headline':notes.push(`${t(txt('headline'))||'"[Headline]"'}. The largest, boldest text on the canvas${b.shape==='vertical'?', set vertically and rotated 90 degrees to read bottom to top':''}${L.arch.id==='big-type'?', set very large so it dominates the layout':', at most 2 to 3 lines'}.`);break;
+    case 'subheadline':notes.push(`${t(txt('subheadline'))||'"[Subheadline]"'}. Medium weight, roughly 40% of the headline size, 1 to 2 lines.`);break;
+    case 'body':notes.push('Body copy: 2 to 3 short lines of supporting text in regular weight.');break;
+    case 'bullets':notes.push('Three short bullet points, each with a small tick or dot icon, left aligned.');break;
+    case 'cta':notes.push(`CTA button with the text ${t(txt('cta'))||'"Learn more"'}. Solid, high-contrast button with rounded corners${b.shape==='light'?', light button on the coloured bar':''}${b.w>c.W*.6?', full width':''}.`);break;
+    case 'image':notes.push(`${b.secondary?'Secondary image':'Main hero image'}${txt('subject')&&!b.secondary?': '+txt('subject'):''}.`);break;
+    case 'person':notes.push(b.shape==='cutout'?'Cut-out photo of a person (head and shoulders, no background) overlapping the main visual, looking toward the headline.':`Photo of a person, head and shoulders${txt('subject')&&!b.secondary?' ('+txt('subject')+')':''}, looking toward the headline.`);break;
+    case 'icon':notes.push('Simple flat illustration or icon that supports the message.');break;
+    case 'badge':notes.push(`${b.shape==='sticker'?'Round sticker':'Small pill-shaped tag'} with the text ${t(txt('badge'))||'"[tag text]"'}, in a bright accent colour.`);break;
+    case 'date':notes.push('Date and time on one line with a small calendar icon, e.g. "[Day, Date | Time]".');break;
+    case 'stat':notes.push(`${b.shape==='sticker'?'Round sticker holding one':'One'} large number with a short caption under it, e.g. "[number] [caption]".`);break;
+    case 'testimonial':notes.push('Short testimonial quote in quotation marks, with the person\'s name and role in smaller text underneath.');break;
+    case 'url':notes.push('Website URL in small text.');break;
+    case 'qr':notes.push('Square QR code placeholder (plain, to be replaced with the real code).');break;
+    case 'disclaimer':notes.push('One line of small fine print or disclaimer text.');break;
+  }
+  if(['image','person','icon'].includes(id)&&b.shape&&b.shape!=='cutout'){notes.push({circle:'Cropped into a circle.',rounded:'Rounded corners.','diag-l':'Its left edge is cut on a strong diagonal.','diag-r':'Its right edge is cut on a strong diagonal.','diag-b':'Its bottom edge is cut on a strong diagonal.','diag-t':'Its top edge is cut on a strong diagonal.'}[b.shape]||'');}
+  if(b.inv) notes.push('White or light text, sitting on the darker area.');
+  const oe=offEdge(b,c);if(oe.length) notes.push(`Runs off the ${oe.join(' and ')} edge of the canvas.`);
+  return notes.filter(Boolean).join(' ');
+}
+const DECOR_BRIEF={
+  scrim:'A dark gradient overlay on the image behind the copy, fading from transparent to about 80% dark so the white text stays readable.',
+  panel:'A solid light card with softly rounded corners holding the copy.',
+  tile:'Rounded tiles in a light neutral tint, arranged as a bento grid with even gaps; the CTA tile is filled with the accent colour.',
+  bar:'A solid accent-colour bar running the full width along the bottom edge.',
+  frame:'A thin 2 px line frame inset from the edges of the canvas.',
+  block:'A flat colour block offset behind the image, slightly down and to the side, for a layered paper look.',
+  diagblock:'A solid accent-colour block on the left with a diagonal right edge.'
+};
+function buildPrompt(L,c,mode){
+  const {W,H,f}=c,styleKey=L.style;
+  const els=L.boxes.filter(b=>NAMES[b.id]).slice().sort((a,b)=>(Math.round(a.y/(c.H*.05))-Math.round(b.y/(c.H*.05)))||(a.x-b.x));
+  const decor=[...new Set(L.boxes.filter(b=>DECOR.has(b.id)).map(b=>b.id))];
+  const cropSides=c.st.sides.map(s=>({t:'top',b:'bottom',l:'left',r:'right'}[s]));
+  const cropTxt=c.st.sides.length?c.st.sides.map(s=>{const px=Math.round((s==='t'||s==='b'?H:W)*c.st.amt/100);return `the ${({t:'top',b:'bottom',l:'left',r:'right'})[s]} ${c.st.amt}% (${px} px)`;}).join(', '):'';
+  const fmtName=f.id==='custom'?'custom size':`${f.name}, ${f.use}`;
+  const pos=b=>({x_from:pct(b.x/W),x_to:pct((b.x+b.w)/W),y_from:pct(b.y/H),y_to:pct((b.y+b.h)/H),px:Math.round(Math.min(b.w,W))+' x '+Math.round(Math.min(b.h,H))});
+  const hier=['headline','image','person','icon','cta'].filter(id=>els.some(b=>b.id===id&&!b.secondary)).map(id=>id==='cta'?'CTA button':NAMES[id].toLowerCase());
+  if(mode==='json'){
+    const o={task:'Create a static ad creative that follows this layout exactly. Treat it as a wireframe: keep every position and size, then style it.',
+      canvas:{width_px:W,height_px:H,aspect_ratio:ratioStr(W,H),format:fmtName},
+      style:{name:STYLE_NAME[styleKey],direction:STYLE_BRIEF[styleKey]},
+      layout:{name:L.name+(L.variant?' ('+L.variant+')':''),description:L.desc},
+      background:BG_BRIEF[c.st.bg],
+      crop_zones:c.st.sides.length?{sides:cropSides,size_pct:c.st.amt,rule:'These edges will be cut off. Let the background and full-bleed imagery run into them, but keep all text, the logo, the CTA and any faces outside them.'}:'none',
+      coordinates:'Percent of canvas width (x) and height (y), measured from the top-left corner.',
+      elements:els.map(b=>{const p=pos(b);return {element:NAMES[b.id],position:where(b,c),x_pct:[p.x_from,p.x_to],y_pct:[p.y_from,p.y_to],size_px:p.px,details:elementBrief(b,L,c)};}),
+      design_details:decor.map(d=>DECOR_BRIEF[d]),
+      visual_hierarchy:hier.join(' > '),
+      rules:rules()};
+    if(txt('colours')) o.colours_and_brand=txt('colours');
+    return JSON.stringify(o,null,2);
+  }
+  const lines=[];
+  lines.push('Create a static ad creative that follows this layout exactly. Treat it as a wireframe: keep every position and size, then style it.','');
+  lines.push('CANVAS',`${W} x ${H} px, ${ratioStr(W,H)} (${fmtName}).`,'');
+  lines.push('STYLE',`${STYLE_NAME[styleKey]}. ${STYLE_BRIEF[styleKey]}`,'');
+  if(txt('colours')) lines.push('COLOURS AND BRAND',txt('colours'),'');
+  lines.push('LAYOUT',`${L.name}${L.variant?' ('+L.variant+')':''}. ${L.desc}`,'');
+  lines.push('BACKGROUND',BG_BRIEF[c.st.bg],'');
+  lines.push('CROP ZONES',c.st.sides.length?`${cap(cropTxt)} will be cut off later. Let the background and any full-bleed imagery run into ${c.st.sides.length>1?'these zones':'this zone'}, but keep all text, the logo, the CTA and any faces completely outside them.`:'None. Keep a comfortable margin of about 5% on every side.','');
+  lines.push('ELEMENTS (x and y as % of canvas width and height, measured from the top-left corner)');
+  els.forEach((b,i)=>{const p=pos(b);lines.push(`${i+1}. ${NAMES[b.id]}: ${where(b,c)}, x ${p.x_from}% to ${p.x_to}%, y ${p.y_from}% to ${p.y_to}% (about ${p.px} px). ${elementBrief(b,L,c)}`);});
+  lines.push('');
+  if(decor.length){lines.push('DESIGN DETAILS');decor.forEach(d=>lines.push('- '+DECOR_BRIEF[d]));lines.push('');}
+  if(hier.length>1) lines.push('VISUAL HIERARCHY',`The eye should land on the ${hier.join(', then the ')}.`,'');
+  lines.push('RULES');rules().forEach(r=>lines.push('- '+r));
+  return lines.join('\n');
+}
+function rules(){return ['Use only the elements listed above. Do not add extra text, icons, logos or decorations.','Render any quoted text exactly as written, spelled correctly. Show bracketed text as short placeholder copy.','Keep text sharp and easy to read, with strong contrast against what sits behind it.','Align elements to a clean grid with consistent spacing and margins.','Do not draw these instructions, the percentages, labels or wireframe boxes in the image.'];}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+
+/* ---------- UI rendering ---------- */
+const $=id=>document.getElementById(id);
+let layouts=[],ctx=null;
+function chip(group,id,label,iconHTML,pressed,sub,extra){return `<button type="button" class="chip${extra||''}" data-group="${group}" data-id="${id}" aria-pressed="${pressed}">${iconHTML}<span class="chip-label">${esc(label)}</span>${sub?`<span class="chip-sub">${esc(sub)}</span>`:''}</button>`;}
+function renderControls(){
+  const f=currentFormat();
+  $('chips-size').innerHTML=FORMATS.map(x=>chip('fmt',x.id,x.name,x.id==='custom'?icon('amt'):ratioIcon(x.w,x.h),state.fmt===x.id,x.id==='custom'?'any size':`${x.w} × ${x.h}`)).join('')+
+    (state.fmt==='custom'?`<div class="custom-size"><input id="cw" type="number" min="50" max="10000" value="${clampDim(state.cw)}" aria-label="Custom width in pixels"><span>×</span><input id="ch" type="number" min="50" max="10000" value="${clampDim(state.ch)}" aria-label="Custom height in pixels"><span>px</span></div>`:'');
+  $('chips-els').innerHTML=ELEMENTS.map(([id,n])=>chip('els',id,n,icon(id),state.els.includes(id))).join('');
+  $('chips-bg').innerHTML=BACKGROUNDS.map(([id,n])=>chip('bg',id,n,icon(id),state.bg===id)).join('');
+  $('chips-style').innerHTML=STYLES.map(([id,n])=>chip('style',id,n,icon(id),state.style===id)).join('');
+  const sides=[['t','Top'],['b','Bottom'],['l','Left'],['r','Right']];
+  $('chips-bleed').innerHTML=chip('bleed','none','No crop',icon('none'),state.sides.length===0)+sides.map(([id,n])=>chip('side',id,n,icon('side_'+id),state.sides.includes(id))).join('')+
+    '<span class="divider" aria-hidden="true"></span>'+[5,10,15,20].map(a=>{const px=state.sides.length?Math.round((state.sides[0]==='t'||state.sides[0]==='b'?f.h:f.w)*a/100)+' px':'amount';return chip('amt',a,a+'%',icon('amt'),state.amt===a&&state.sides.length>0,px);}).join('');
+}
+/* ---------- favourites (saved in this browser's local storage) ---------- */
+const FAV_KEY='layoutlab.favs.v1';
+let favs=[];
+try{const f=JSON.parse(localStorage.getItem(FAV_KEY)||'[]');if(Array.isArray(f)) favs=f.filter(x=>x&&x.uid&&x.st);}catch(e){}
+function saveFavs(){try{localStorage.setItem(FAV_KEY,JSON.stringify(favs));return true;}catch(e){toast('Could not save favourites in this browser (storage is blocked).');return false;}}
+function snap(st){return {fmt:st.fmt,cw:clampDim(st.cw),ch:clampDim(st.ch),els:st.els.slice().sort(),bg:st.bg,style:st.style,sides:st.sides.slice().sort(),amt:st.amt};}
+function favKey(uid,st){return uid+'|'+JSON.stringify(snap(st));}
+const isFav=key=>favs.some(f=>f.key===key);
+function settingsLine(c){const st=c.st,f=c.f;const crop=st.sides.length?`crop ${st.amt}% ${st.sides.map(s=>({t:'top',b:'bottom',l:'left',r:'right'})[s]).join(', ')}`:'no crop';
+  return `${f.id==='custom'?'Custom':f.name} ${c.W} × ${c.H} · ${BACKGROUNDS.find(b=>b[0]===st.bg)[1].toLowerCase()} · ${crop}`;}
+const STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg>';
+
+let items=[],selKey=null;
+function cardHTML(it,i){const L=it.L,fav=isFav(it.key);
+  return `<div class="card${it.key===selKey?' is-selected':''}" role="button" tabindex="0" data-key="${esc(it.key)}" aria-label="Open ${esc(L.name)}">
+    <div class="card-preview">${renderSVG(L,it.c,{prefix:'g'+i+'-'})}</div>
+    <div class="card-foot"><div class="card-name">${esc(L.name)}<span class="card-tag">${L.variant?esc(cap(L.variant))+' · ':''}${esc(STYLE_NAME[L.style])}</span>${it.sub?`<span class="card-tag">${esc(it.sub)}</span>`:''}</div>
+    <div class="card-actions"><button type="button" class="icon-btn star-btn" data-star="${esc(it.key)}" aria-pressed="${fav}" aria-label="${fav?'Remove from':'Add to'} favourites" title="${fav?'Remove from':'Add to'} favourites">${STAR}</button>
+    <button type="button" class="icon-btn" data-copy="${esc(it.key)}" aria-label="Copy prompt for ${esc(L.name)}">${icon('copy')}Copy</button></div></div></div>`;}
+function renderTabs(){const t=state.tab==='fav'?'fav':'all';
+  $('tab-all').setAttribute('aria-selected',t==='all');$('tab-fav').setAttribute('aria-selected',t==='fav');
+  $('fav-count').textContent=favs.length;}
+function renderResults(){
+  ctx=makeCtx();layouts=generate(ctx);
+  const c=ctx,nEl=state.els.length;
+  $('summary').textContent=`${c.W} × ${c.H} · ${nEl} element${nEl===1?'':'s'} · ${STYLE_NAME[state.style]}`;
+  renderTabs();
+  if(state.tab==='fav'){
+    items=favs.map(f=>{const fc=makeCtx(f.st);const L=generate(fc).find(x=>x.uid===f.uid);return L?{key:f.key,L,c:fc,sub:settingsLine(fc)}:null;}).filter(Boolean);
+    $('res-count').textContent=items.length?`${items.length} favourite${items.length===1?'':'s'}`:'No favourites yet';
+    $('res-sub').textContent='Each favourite keeps the size, elements, background and crop it was saved with.';
+    if(!items.length){$('grid').innerHTML='<div class="empty">Tap the star on any layout in All layouts to save it here. Favourites stay in this browser after a refresh.</div>';return syncDrawer();}
+  }else{
+    items=layouts.map(L=>({key:favKey(L.uid,state),L,c}));
+    $('res-count').textContent=layouts.length?`${layouts.length} layout${layouts.length===1?'':'s'}`:'No layouts yet';
+    $('res-sub').textContent=settingsLine(c)+(c.banner?' · banner layouts for very wide sizes':'');
+    if(!layouts.length){$('grid').innerHTML=`<div class="empty">${nEl?'None of the layouts in this style fit the chosen elements. Add a hero image, person or illustration, or switch the style to All styles.':'Pick at least one element above, such as a headline and a CTA button, to see layouts.'}</div>`;return syncDrawer();}
+  }
+  $('grid').innerHTML=items.map(cardHTML).join('');
+  syncDrawer();
+}
+function syncDrawer(){if(selKey&&$('drawer').classList.contains('open')){const it=items.find(x=>x.key===selKey);if(it) fillDrawer(it);else closeDrawer();}}
+function renderAll(){renderControls();renderResults();save();}
+function toggleFav(key){
+  const i=favs.findIndex(f=>f.key===key);
+  if(i>=0){favs.splice(i,1);if(saveFavs()) toast('Removed from favourites');}
+  else{const it=items.find(x=>x.key===key);if(!it) return;favs.unshift({key,uid:it.L.uid,st:snap(it.c.st),name:it.L.name,added:Date.now()});if(saveFavs()) toast('Added to favourites');}
+  renderResults();updateDrawerStar();
+}
+
+/* ---------- drawer ---------- */
+let lastFocus=null;
+function openDrawer(key){const it=items.find(x=>x.key===key);if(!it) return;selKey=key;lastFocus=document.activeElement;
+  document.querySelectorAll('.card').forEach(el=>el.classList.toggle('is-selected',el.dataset.key===key));
+  fillDrawer(it);$('backdrop').hidden=false;const d=$('drawer');d.classList.add('open');d.setAttribute('aria-hidden','false');setTimeout(()=>$('d-copy').focus(),60);}
+function closeDrawer(){const d=$('drawer');d.classList.remove('open');d.setAttribute('aria-hidden','true');$('backdrop').hidden=true;if(lastFocus&&lastFocus.focus&&document.contains(lastFocus)) lastFocus.focus();}
+function updateDrawerStar(){const on=selKey&&isFav(selKey);const b=$('d-star');b.setAttribute('aria-pressed',String(!!on));b.lastChild.textContent=on?'Favourite':'Add to favourites';}
+function selItem(){return items.find(x=>x.key===selKey);}
+function fillDrawer(it){const L=it.L,c=it.c;
+  $('d-style').textContent=STYLE_NAME[L.style]+' layout';$('d-title').textContent=L.name+(L.variant?' · '+L.variant:'');
+  $('d-preview').innerHTML=renderSVG(L,c,{prefix:'d',labels:true});$('d-desc').textContent=L.desc;
+  const show=(w,on)=>{$(w).hidden=!on;};show('w-headline',L.boxes.some(b=>b.id==='headline'));show('w-subheadline',L.boxes.some(b=>b.id==='subheadline'));show('w-cta',L.boxes.some(b=>b.id==='cta'));show('w-badge',L.boxes.some(b=>b.id==='badge'));show('w-subject',L.boxes.some(b=>VIS.includes(b.id)));
+  ['headline','subheadline','cta','badge','subject','colours'].forEach(k=>{const el=$('f-'+k);if(document.activeElement!==el) el.value=state.text[k]||'';});
+  $('fmt-prose').setAttribute('aria-pressed',state.out!=='json');$('fmt-json').setAttribute('aria-pressed',state.out==='json');
+  $('d-prompt').value=buildPrompt(L,c,state.out);updateDrawerStar();}
+
+/* ---------- copy ---------- */
+let toastT;function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+function copyText(text,fallbackEl){
+  const done=()=>toast('Prompt copied. Paste it into your image tool.');
+  const fail=()=>{if(fallbackEl){fallbackEl.focus();fallbackEl.select();}toast('Copy was blocked here. The prompt is selected, press Ctrl+C or Cmd+C.');};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done,fail);else fail();}catch(e){fail();}
+}
+
+/* ---------- events ---------- */
+document.querySelector('.controls').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b) return;const g=b.dataset.group,id=b.dataset.id;
+  if(g==='fmt') state.fmt=id;
+  else if(g==='els'){const i=state.els.indexOf(id);if(i>=0) state.els.splice(i,1);else state.els.push(id);}
+  else if(g==='bg') state.bg=id;
+  else if(g==='style') state.style=id;
+  else if(g==='bleed') state.sides=[];
+  else if(g==='side'){const i=state.sides.indexOf(id);if(i>=0) state.sides.splice(i,1);else state.sides.push(id);}
+  else if(g==='amt'){state.amt=+id;if(!state.sides.length) state.sides=['t','b'];}
+  renderAll();
+  const again=document.querySelector(`.chip[data-group="${g}"][data-id="${id}"]`);if(again) again.focus();
+});
+document.querySelector('.controls').addEventListener('input',e=>{
+  if(e.target.id==='cw'||e.target.id==='ch'){const v=+e.target.value;if(!v||v<50) return;state[e.target.id]=v;renderResults();save();}
+});
+document.querySelector('.controls').addEventListener('change',e=>{if(e.target.id==='cw'||e.target.id==='ch'){state[e.target.id]=clampDim(e.target.value);e.target.value=state[e.target.id];renderResults();save();}});
+$('grid').addEventListener('click',e=>{
+  const st=e.target.closest('[data-star]');if(st){e.stopPropagation();toggleFav(st.dataset.star);return;}
+  const cp=e.target.closest('[data-copy]');
+  if(cp){e.stopPropagation();const it=items.find(x=>x.key===cp.dataset.copy);if(it) copyText(buildPrompt(it.L,it.c,state.out),null);return;}
+  const card=e.target.closest('.card');if(card) openDrawer(card.dataset.key);
+});
+$('grid').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('card')){e.preventDefault();openDrawer(e.target.dataset.key);}});
+$('tab-all').addEventListener('click',()=>{state.tab='all';renderResults();save();});
+$('tab-fav').addEventListener('click',()=>{state.tab='fav';renderResults();save();});
+$('d-star').addEventListener('click',()=>{if(selKey) toggleFav(selKey);});
+$('d-close').addEventListener('click',closeDrawer);$('backdrop').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('drawer').classList.contains('open')) closeDrawer();});
+['headline','subheadline','cta','badge','subject','colours'].forEach(k=>$('f-'+k).addEventListener('input',e=>{state.text[k]=e.target.value;const it=selItem();if(it) $('d-prompt').value=buildPrompt(it.L,it.c,state.out);save();}));
+$('fmt-prose').addEventListener('click',()=>{state.out='prose';const it=selItem();if(it) fillDrawer(it);save();});
+$('fmt-json').addEventListener('click',()=>{state.out='json';const it=selItem();if(it) fillDrawer(it);save();});
+$('d-copy').addEventListener('click',()=>copyText($('d-prompt').value,$('d-prompt')));
+
+/* ---------- light / dark switch ---------- */
+const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+function currentTheme(){const a=document.documentElement.getAttribute('data-theme');if(a==='dark'||a==='light') return a;return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+function showTheme(){const dark=currentTheme()==='dark';$('theme-switch').setAttribute('aria-checked',String(dark));$('theme-label').textContent=dark?'Dark mode':'Light mode';$('theme-knob').innerHTML=dark?MOON:SUN;}
+try{const t=localStorage.getItem('layoutlab.theme');if(t==='dark'||t==='light') document.documentElement.setAttribute('data-theme',t);}catch(e){}
+$('theme-switch').addEventListener('click',()=>{const next=currentTheme()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('layoutlab.theme',next);}catch(e){}showTheme();});
+if(window.matchMedia){try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',showTheme);}catch(e){}}
+showTheme();
+
+renderAll();
+})();
+</script>
+</body></html>
